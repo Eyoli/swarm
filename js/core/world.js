@@ -9,6 +9,7 @@ class World {
 		this.agents = [];
 		this.engines = [];
 		this.maxAgents = maxAgents;
+		this.step = 0;
 	}
 	
 	withEngine(engine) {
@@ -33,5 +34,7 @@ class World {
 		for(var i = 0; i < this.agents.length; i++) {
 			this.agents[i].act(this);
 		}
+		
+		this.step++;
 	}
 }

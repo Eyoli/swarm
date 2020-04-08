@@ -1,9 +1,31 @@
 "use strict";
 
+class HiveAgentFactory {
+	constructor() {
+		throw new TypeError('Static class cannot be instantiated');
+	}
+	
+	static generateBee(position) {
+		return new TypedAgent(new Bee(position, 2 * Math.PI * Math.random()), "BEE");
+	}
+	
+	static generateHive(position, beesInside) {
+		return new TypedAgent(new Hive(position, beesInside), "HIVE");
+	}
+	
+	static generateFlower(position) {
+		return new TypedAgent(new Flower(position), "FLOWER");
+	}
+	
+	static generatePheromon(position, sourceAngle, type) {
+		return new TypedAgent(new TimedAgent(new Pheromon(position, sourceAngle), 200), type);
+	}
+}
+
 class BeePhysics extends BasicPhysics {
 	constructor(position, angle) {
-		var speed = {amp: 0, angle: angle, max: 10};
-		super(new RoundShape(position, 20), speed, 0.1);
+		var speed = {amp: 0, angle: angle, max: 5};
+		super(new RoundShape(position, 10), speed, 0.1);
 		
 		this.fuzziness = {
 			amp: 3,
@@ -27,22 +49,53 @@ class Bee extends Agent {
 	constructor(position, angle) {
 		super(new BeePhysics(position, angle));
 		
-		var searchingFlower = false;
-		var pheromonReleasingPeriod = 15;
+		this.searchingFlower = true;
+		this.releasingPeriod = 30;
+		this.lastReleaseStep = 0;
 	}
 	
 	act(world) {
 		this.physics.move();
+		
+		var rand = Math.random();
+		
+		if(rand > 0.99) {
+			this.physics.speed.angle = 2 * Math.PI * Math.random();
+		}
+		
+		if(world.step - this.lastReleaseStep >= this.releasingPeriod) {
+			this.releasePheromon(world);
+		}
+	}
+	
+	releasePheromon(world) {
+		var beePosition = {
+			x: this.physics.getCenter().x,
+			y: this.physics.getCenter().y
+		};
+		var beeSourceAngle = this.physics.speed.angle + Math.PI;
+		var type = this.searchingFlower ? "TOWARD_HIVE" : "TOWARD_FLOWER";
+		
+		world.withAgent(HiveAgentFactory.generatePheromon(beePosition, beeSourceAngle, type));
+		
+		this.lastReleaseStep = world.step;
 	}
 	
 	react(world, info) {
-		if(info.type == "FLOWER") {
-			
+		if(info.type === "FLOWER") {
+			this.searchingFlower = false;
+		} else if(info.type === "HIVE") {
+			this.searchingFlower = true;
+		} else if(info.type === "TOWARD_FLOWER" && this.searchingFlower) {
+			this.physics.speed.angle = info.sourceAngle;
+		} else if(info.type === "TOWARD_HIVE" && !this.searchingFlower) {
+			this.physics.speed.angle = info.sourceAngle;
 		}
 	}
 	
 	interact() {
-		return {};
+		return {
+		};
 	}
 }
 
@@ -54,11 +107,26 @@ class UnmovableAgent extends Agent {
 }
 
 class Hive extends UnmovableAgent {
-	constructor(position) {
+	constructor(position, beesInside) {
 		super(position);
+		
+		this.beesInside = beesInside || 0;
+		this.currentBees = 0;
+		this.releaseBeePeriod = 50;
+		this.lastReleaseStep = 0;
 	}
 	
 	act(world) {
+		if(this.beesInside > 0 && (world.step - this.lastReleaseStep) >= this.releaseBeePeriod) {
+			var hivePosition = {
+				x: this.physics.getCenter().x,
+				y: this.physics.getCenter().y
+			};
+			world.withAgent(HiveAgentFactory.generateBee(hivePosition));
+			
+			this.beesInside--;
+			this.lastReleaseStep = world.step;
+		}
 	}
 	
 	react(world, info) {
@@ -66,14 +134,15 @@ class Hive extends UnmovableAgent {
 	
 	interact() {
 		return {
-			type: "HIVE"
 		};
 	}
 }
 
 class Pheromon extends UnmovableAgent {
-	constructor(position) {
+	constructor(position, sourceAngle) {
 		super(position);
+		
+		this.sourceAngle = sourceAngle;
 	}
 	
 	act(world) {
@@ -84,7 +153,6 @@ class Pheromon extends UnmovableAgent {
 	
 	interact() {
 		return {
-			type: "PHEROMON",
 			sourceAngle: this.sourceAngle
 		};
 	}
@@ -103,7 +171,6 @@ class Flower extends UnmovableAgent {
 	
 	interact() {
 		return {
-			type: "FLOWER"
 		};
 	}
 }

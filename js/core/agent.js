@@ -71,7 +71,7 @@ class AgentDecorator {
 	}
 	
 	isDestroyed() {
-		return this.agent.destroyed;
+		return this.agent.isDestroyed();
 	}
 	
 	intersect(agent) {
@@ -87,7 +87,6 @@ class TimedAgent extends AgentDecorator {
 	constructor(agent, expirationTime) {
 		super(agent);
 		
-		this.agent = agent;
 		this.expirationTime = expirationTime;
 		this.time = 0;
 	}
@@ -100,5 +99,19 @@ class TimedAgent extends AgentDecorator {
 		}
 		
 		this.time++;
+	}
+}
+
+class TypedAgent extends AgentDecorator {
+	constructor(agent, type) {
+		super(agent);
+		
+		this.type = type;
+	}
+	
+	interact() {
+		var info = this.agent.interact();
+		info.type = this.type;
+		return info;
 	}
 }
