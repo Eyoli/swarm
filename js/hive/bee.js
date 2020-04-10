@@ -22,32 +22,18 @@ class HiveAgentFactory {
 	}
 }
 
-class BeePhysics extends BasicPhysics {
-	constructor(position, angle) {
-		var speed = {amp: 0, angle: angle, max: 5};
-		super(new RoundShape(position, 10), speed, 0.1);
-		
-		this.fuzziness = {
-			amp: 3,
-			period: 25,
-			t: 0
-		};
-	}
-	
-	move() {
-		BasicPhysics.prototype.move.call(this);
-		
-		var actualFuzziness = this.fuzziness.amp * Math.cos(2 * Math.PI * this.fuzziness.t / this.fuzziness.period);
-		this.shape.center.x += actualFuzziness * Math.cos(this.speed.angle + Math.PI / 2);
-		this.shape.center.y += actualFuzziness * Math.sin(this.speed.angle + Math.PI / 2);
-		
-		this.fuzziness.t++;
-	}
-}
-
 class Bee extends Agent {
 	constructor(position, angle) {
-		super(new BeePhysics(position, angle));
+		var speed = {amp: 0, angle: angle, max: 5};
+		
+		var fuzziness = {
+			amp: 3,
+			period: 25
+		};
+		
+		super(
+			new RoundShape(position, 10), 
+			new FuzzyPhysics(speed, 0.1, fuzziness));
 		
 		this.searchingFlower = true;
 		this.releasingPeriod = 30;
@@ -55,7 +41,7 @@ class Bee extends Agent {
 	}
 	
 	act(world) {
-		this.physics.move();
+		this.shape.center = this.physics.move(this.shape.center);
 		
 		var rand = Math.random();
 		
@@ -70,8 +56,8 @@ class Bee extends Agent {
 	
 	releasePheromon(world) {
 		var beePosition = {
-			x: this.physics.getCenter().x,
-			y: this.physics.getCenter().y
+			x: this.shape.center.x,
+			y: this.shape.center.y
 		};
 		var beeSourceAngle = this.physics.speed.angle + Math.PI;
 		var type = this.searchingFlower ? "TOWARD_HIVE" : "TOWARD_FLOWER";
@@ -102,7 +88,7 @@ class Bee extends Agent {
 class UnmovableAgent extends Agent {
 	constructor(position) {
 		var speed = {amp: 0, angle: 0, max: 0};
-		super(new BasicPhysics(new RoundShape(position, 40), speed, 0));
+		super(new RoundShape(position, 40), new BasicPhysics(speed, 0));
 	}
 }
 
@@ -119,8 +105,8 @@ class Hive extends UnmovableAgent {
 	act(world) {
 		if(this.beesInside > 0 && (world.step - this.lastReleaseStep) >= this.releaseBeePeriod) {
 			var hivePosition = {
-				x: this.physics.getCenter().x,
-				y: this.physics.getCenter().y
+				x: this.shape.center.x,
+				y: this.shape.center.y
 			};
 			world.withAgent(HiveAgentFactory.generateBee(hivePosition));
 			

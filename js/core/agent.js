@@ -1,16 +1,17 @@
 "use strict";
 
-var AgentInterface = new Interface('Agent', 'act', 'react', 'interact', 'getPhysics', 'isDestroyed');
+var AgentInterface = new Interface('Agent', 'act', 'react', 'interact', 'getShape', 'getPhysics', 'isDestroyed');
 
 class Agent {
-	constructor(physics) {
-		Interface.checkImplements(this, ShapeInterface, AgentInterface);
+	constructor(shape, physics) {
+		Interface.checkImplements(this, AgentInterface);
 		
 		if (this.constructor === Agent) {
 			throw new TypeError('Abstract class cannot be instantiated directly');
 		}
 		
 		this.physics = physics;
+		this.shape = shape;
 		this.destroyed = false;
 	}
 	
@@ -26,6 +27,10 @@ class Agent {
 		throw new Error('You must implement this function');
 	}
 	
+	getShape() {
+		return this.shape;
+	}
+	
 	getPhysics() {
 		return this.physics;
 	}
@@ -33,19 +38,11 @@ class Agent {
 	isDestroyed() {
 		return this.destroyed;
 	}
-	
-	intersect(agent) {
-		return this.physics.intersect(agent);
-	}
-	
-	getClosestPoint(position) {
-		return this.physics.getClosestPoint(position);
-	}
 }
 
 class AgentDecorator {
 	constructor(agent) {
-		Interface.checkImplements(this, ShapeInterface, AgentInterface);
+		Interface.checkImplements(this, AgentInterface);
 		
 		if (this.constructor === AgentDecorator) {
 			throw new TypeError('Abstract class cannot be instantiated directly');
@@ -66,20 +63,16 @@ class AgentDecorator {
 		return this.agent.interact();
 	}
 	
+	getShape() {
+		return this.agent.getShape();
+	}
+	
 	getPhysics() {
 		return this.agent.getPhysics();
 	}
 	
 	isDestroyed() {
 		return this.agent.isDestroyed();
-	}
-	
-	intersect(agent) {
-		return this.agent.intersect(agent);
-	}
-	
-	getClosestPoint(position) {
-		return this.agent.getClosestPoint(position);
 	}
 }
 

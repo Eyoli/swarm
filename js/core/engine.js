@@ -2,6 +2,49 @@
 
 var EngineInterface = new Interface('Engine', 'run');
 
+class StatisticExtractor {
+	constructor(source, extractorFn) {
+		this.extractorFn = extractorFn;
+		this.source = source;
+		this.statistic = null;
+	}
+	
+	update() {
+		var newValue = this.extractorFn(this.source);
+		this.statistic = this.processNewValue(newValue);
+		return this.statistic;
+	}
+	
+	processNewValue(newValue) {
+		return newValue;
+	}
+}
+
+class MobileMeanExtractor extends StatisticExtractor {
+	constructor(source, extractorFn, maxValuesNb) {
+		super(source, extractorFn);
+		
+		this.maxValuesNb = maxValuesNb;
+		this.lastValues = [];
+	}
+	
+	processNewValue(newValue) {
+		var n = this.lastValues.length;
+		
+		this.lastValues.push(newValue);
+
+		if(n > 0) {
+			if(n > this.maxValuesNb) {
+				var oldestValue = this.lastValues.shift();
+				return this.statistic + (newValue - oldestValue) / n;
+			}
+			return (this.statistic * n + newValue) / (n + 1);
+		}
+		
+		return newValue;
+	}
+}
+
 class CollisionEngine {
 	constructor(collisionFinder) {
 		Interface.checkImplements(this, EngineInterface);
@@ -10,7 +53,7 @@ class CollisionEngine {
 	}
 	
 	run(world) {
-		var collisions = this.collisionFinder.search(world.agents);
+		var collisions = this.collisionFinder.search(world.agents.map(a => a.getShape()));
 		
 		// Handle collisions
 		for(var i = 0; i < collisions.length; i++) {
@@ -51,7 +94,7 @@ class RoundWorldEngine {
 	
 	run(world) {
 		for(var i = 0; i < world.agents.length; i++) {
-			var center = world.agents[i].getPhysics().getCenter();
+			var center = world.agents[i].getShape().center;
 			if(center.x < 0) {
 				center.x = this.width;
 			} else if(center.x > this.width) {

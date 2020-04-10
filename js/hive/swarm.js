@@ -11,18 +11,25 @@ window.onload = function() {
 		H: 800
 	};
 	
-	var world;
-	var agents = [];
+	var world, collisionsMobileMean, agentsMobileMean;
 	
 	function init() {
 		ctx = document.getElementById("myCanvas").getContext("2d");
 		
+		//var collisionEngine = new CollisionEngine(new BasicCollisionFinder());
+		var collisionEngine = new CollisionEngine(
+			new SpatialSearchCollisionFinder(
+				new CircleCollisionResolver(), context.L / 2, context.H / 2));
+		
 		world = new World(100)
 			.withEngine(new ClearEngine())
 			.withEngine(new RoundWorldEngine(context.L, context.H))
-			.withEngine(new CollisionEngine(new BasicCollisionFinder()))
+			.withEngine(collisionEngine)
 			.withAgent(HiveAgentFactory.generateFlower({x: 300, y: 300}))
 			.withAgent(HiveAgentFactory.generateHive({x: 10, y: 10}, 5));
+			
+		collisionsMobileMean = new MobileMeanExtractor(collisionEngine, e => e.collisionFinder.getLastComputations(), 20);
+		agentsMobileMean = new MobileMeanExtractor(world, w => w.agents.length, 20);
         		
 		window.requestAnimationFrame(draw);
 	}
@@ -30,8 +37,12 @@ window.onload = function() {
 	function draw(timestamp) {
 		
 		world.advance();
-			        
+					        
         ctx.clearRect(0, 0, context.L, context.H);
+		
+		ctx.font = "20px Georgia";
+		ctx.fillText(collisionsMobileMean.update().toFixed(0), context.L - 100, 30);
+		ctx.fillText(agentsMobileMean.update().toFixed(0), context.L - 100, 60);
 		
 		for(var i = 0; i < world.agents.length; i++) {
 			var agent = world.agents[i];
@@ -60,7 +71,7 @@ window.onload = function() {
 	}
 	
 	function drawBee(bee) {
-		var shape = bee.getPhysics().shape;
+		var shape = bee.getShape();
 		
 		ctx.fillStyle = "#ff0000";
 		ctx.globalAlpha = 1;
@@ -70,7 +81,7 @@ window.onload = function() {
 	}
 	
 	function drawPheromon(pheromon) {
-		var shape = pheromon.getPhysics().shape;
+		var shape = pheromon.getShape();
 		
 		ctx.fillStyle = "#00ff00";
 		ctx.globalAlpha = 0.2;
@@ -80,7 +91,7 @@ window.onload = function() {
 	}
 	
 	function drawHive(hive) {
-		var shape = hive.getPhysics().shape;
+		var shape = hive.getShape();
 		
 		ctx.fillStyle = "#0000ff";
 		ctx.globalAlpha = 1;
@@ -90,7 +101,7 @@ window.onload = function() {
 	}
 	
 	function drawFlower(flower) {
-		var shape = flower.getPhysics().shape;
+		var shape = flower.getShape();
 		
 		ctx.fillStyle = "#000000";
 		ctx.globalAlpha = 1;
