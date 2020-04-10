@@ -10,10 +10,4 @@ class Shape {
 	}
 }
 
-class RoundShape extends Shape {
-	constructor(center, radius) {
-		super(center);
-		
-		this.radius = radius;
-	}
-}
+module.exports = Shape;

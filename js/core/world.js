@@ -1,10 +1,7 @@
 "use strict";
 
-var WorldInterface = new Interface('World', 'advance');
-
 class World {
 	constructor(maxAgents) {
-		Interface.checkImplements(this, WorldInterface);
 		
 		this.agents = [];
 		this.engines = [];
@@ -38,3 +35,5 @@ class World {
 		this.step++;
 	}
 }
+
+module.exports = World;

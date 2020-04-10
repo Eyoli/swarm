@@ -1,49 +1,10 @@
 "use strict";
 
-var EngineInterface = new Interface('Engine', 'run');
+const EngineInterface = require('./engine-interface');
 
-class StatisticExtractor {
-	constructor(source, extractorFn) {
-		this.extractorFn = extractorFn;
-		this.source = source;
-		this.statistic = null;
-	}
-	
-	update() {
-		var newValue = this.extractorFn(this.source);
-		this.statistic = this.processNewValue(newValue);
-		return this.statistic;
-	}
-	
-	processNewValue(newValue) {
-		return newValue;
-	}
-}
 
-class MobileMeanExtractor extends StatisticExtractor {
-	constructor(source, extractorFn, maxValuesNb) {
-		super(source, extractorFn);
-		
-		this.maxValuesNb = maxValuesNb;
-		this.lastValues = [];
-	}
-	
-	processNewValue(newValue) {
-		var n = this.lastValues.length;
-		
-		this.lastValues.push(newValue);
 
-		if(n > 0) {
-			if(n > this.maxValuesNb) {
-				var oldestValue = this.lastValues.shift();
-				return this.statistic + (newValue - oldestValue) / n;
-			}
-			return (this.statistic * n + newValue) / (n + 1);
-		}
-		
-		return newValue;
-	}
-}
+
 
 class CollisionEngine {
 	constructor(collisionFinder) {
@@ -107,3 +68,5 @@ class RoundWorldEngine {
 		}
 	}
 }
+
+module.exports = CollisionEngine;
