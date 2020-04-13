@@ -1,6 +1,4 @@
-"use strict";
-
-class Physics {
+export default class Physics {
 	constructor(speed, acc) {
 		
 		if (this.constructor === Physics) {
@@ -15,5 +13,3 @@ class Physics {
 		throw new Error('You must implement this function');
 	}
 }
-
-module.exports = Physics;

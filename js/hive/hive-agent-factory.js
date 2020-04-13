@@ -1,23 +1,23 @@
-const TypedAgent = require('../core/agent/typed-agent');
-const TimedAgent = require('../core/agent/timed-agent');
+import TypedAgent from '../core/agent/typed-agent';
+import TimedAgent from '../core/agent/timed-agent';
 
-const Bee = require('./bee');
-const Hive = require('./hive');
-const Flower = require('./flower');
-const Pheromon = require('./pheromon');
+import Bee from './bee';
+import Hive from './hive';
+import Flower from './flower';
+import Pheromon from './pheromon';
 
-exports.generateBee = (position) => {
+export const generateBee = (position) => {
 	return new TypedAgent(new Bee(position, 2 * Math.PI * Math.random()), "BEE");
 };
 	
-exports.generateHive = (position, beesInside) => {
+export const generateHive = (position, beesInside) => {
 	return new TypedAgent(new Hive(position, beesInside), "HIVE");
 };
 
-exports.generateFlower = (position) => {
+export const generateFlower = (position) => {
 	return new TypedAgent(new Flower(position), "FLOWER");
 };
 
-exports.generatePheromon = (position, sourceAngle, type) => {
+export const generatePheromon = (position, sourceAngle, type) => {
 	return new TypedAgent(new TimedAgent(new Pheromon(position, sourceAngle), 200), type);
 };

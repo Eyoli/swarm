@@ -1,6 +1,4 @@
-"use strict";
-
-class World {
+export default class World {
 	constructor(maxAgents) {
 		
 		this.agents = [];
@@ -14,11 +12,12 @@ class World {
 		return this;
 	}
 	
-	withAgent(agent) {
+	addAgent(agent) {
 		if(this.agents.length < this.maxAgents) {
 			this.agents.push(agent);
+			return true;
 		}
-		return this;
+		return false;
 	}
 	
 	advance() {		
@@ -35,5 +34,3 @@ class World {
 		this.step++;
 	}
 }
-
-module.exports = World;

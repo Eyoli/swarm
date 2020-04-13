@@ -1,7 +1,7 @@
-const Interface = require('../interface');
-const AgentInterface = require('./agent-interface');
+import Interface from '../interface';
+import AgentInterface from './agent-interface';
 
-class AgentDecorator {
+export default class AgentDecorator {
 	constructor(agent) {
 		Interface.checkImplements(this, AgentInterface);
 		
@@ -36,5 +36,3 @@ class AgentDecorator {
 		return this.agent.isDestroyed();
 	}
 }
-
-module.exports = AgentDecorator;

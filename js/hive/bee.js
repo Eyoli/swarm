@@ -1,10 +1,35 @@
 "use strict";
 
-const Agent = require('../core/agent/agent');
-const RoundShape = require('../core/shape/round-shape');
-const FuzzyPhysics = require('../core/physics/fuzzy-physics');
+import Interface from '../core/interface';
+import Agent from '../core/agent/agent';
+import RoundShape from '../core/shape/round-shape';
+import FuzzyPhysics from '../core/physics/fuzzy-physics';
 
-class Bee extends Agent {
+import BehaviorInterface from '../core/behavior/behavior-interface';
+import ComposedBehavior from '../core/behavior/composed-behavior';
+import MoveBehavior from '../core/behavior/move-behavior';
+import PeriodicBehavior from '../core/behavior/periodic-behavior';
+
+import {generatePheromon} from './hive-agent-factory';
+
+class ReleasePheromonBehavior {
+	constructor() {
+		Interface.checkImplements(this, BehaviorInterface);
+	}
+	
+	apply(agent, world) {		
+		var agentPosition = {
+			x: agent.shape.center.x,
+			y: agent.shape.center.y
+		};
+		var agentSourceAngle = agent.physics.speed.angle + Math.PI;
+		var type = agent.searchingFlower ? "TOWARD_HIVE" : "TOWARD_FLOWER";
+		
+		world.addAgent(generatePheromon(agentPosition, agentSourceAngle, type));
+	}
+}
+
+export default class Bee extends Agent {
 	constructor(position, angle) {
 		var speed = {amp: 0, angle: angle, max: 10};
 		
@@ -15,38 +40,14 @@ class Bee extends Agent {
 		
 		super(
 			new RoundShape(position, 10), 
-			new FuzzyPhysics(speed, 0.1, fuzziness));
+			new FuzzyPhysics(speed, 0.1, fuzziness),
+			new ComposedBehavior(
+				new MoveBehavior(),
+				new PeriodicBehavior(new ReleasePheromonBehavior(), 30)
+			)
+		);
 		
 		this.searchingFlower = true;
-		this.releasingPeriod = 30;
-		this.lastReleaseStep = 0;
-	}
-	
-	act(world) {
-		this.shape.center = this.physics.move(this.shape.center);
-		
-		var rand = Math.random();
-		
-		if(rand > 0.99) {
-			this.physics.speed.angle = 2 * Math.PI * Math.random();
-		}
-		
-		if(world.step - this.lastReleaseStep >= this.releasingPeriod) {
-			this.releasePheromon(world);
-		}
-	}
-	
-	releasePheromon(world) {
-		var beePosition = {
-			x: this.shape.center.x,
-			y: this.shape.center.y
-		};
-		var beeSourceAngle = this.physics.speed.angle + Math.PI;
-		var type = this.searchingFlower ? "TOWARD_HIVE" : "TOWARD_FLOWER";
-		
-		world.withAgent(require('./hive-agent-factory').generatePheromon(beePosition, beeSourceAngle, type));
-		
-		this.lastReleaseStep = world.step;
 	}
 	
 	react(world, info) {
@@ -66,5 +67,3 @@ class Bee extends Agent {
 		};
 	}
 }
-
-module.exports = Bee;

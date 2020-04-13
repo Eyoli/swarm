@@ -1,6 +1,6 @@
-const Physics = require('./physics');
+import Physics from './physics';
 
-class BasicPhysics extends Physics {
+export default class BasicPhysics extends Physics {
 	constructor(speed, acc) {
 		super(speed, acc);
 	}
@@ -16,5 +16,3 @@ class BasicPhysics extends Physics {
 		};
 	}
 }
-
-module.exports = BasicPhysics;

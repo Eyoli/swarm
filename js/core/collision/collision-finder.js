@@ -1,4 +1,4 @@
-class CollisionFinder {
+export default class CollisionFinder {
 	constructor() {
 		if (this.constructor === CollisionFinder) {
 			throw new TypeError('Abstract class cannot be instantiated directly');
@@ -15,5 +15,3 @@ class CollisionFinder {
 		return this.lastComputations;
 	}
 }
-
-module.exports = CollisionFinder;

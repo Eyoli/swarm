@@ -1,4 +1,4 @@
-class StatisticExtractor {
+export default class StatisticExtractor {
 	constructor(source, extractorFn) {
 		this.extractorFn = extractorFn;
 		this.source = source;
@@ -15,5 +15,3 @@ class StatisticExtractor {
 		return newValue;
 	}
 }
-
-module.exports = StatisticExtractor;

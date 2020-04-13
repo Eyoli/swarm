@@ -1,9 +1,9 @@
-const CollisionFinder = require('./collision-finder');
+import CollisionFinder from './collision-finder';
 
 /**
 	Basic collision engine : we test every collision possible in a set of shapes
 */
-class BasicCollisionFinder extends CollisionFinder {
+export default class BasicCollisionFinder extends CollisionFinder {
 	constructor(collisionResolver) {
 		super();
 		
@@ -28,5 +28,3 @@ class BasicCollisionFinder extends CollisionFinder {
 		return collidingIndexes;
 	}
 }
-
-module.exports = BasicCollisionFinder;

@@ -1,4 +1,4 @@
-class Interface {
+export default class Interface {
  
   constructor(name, ...methods) {
     if (typeof name !== 'string' || name.length === 0) {
@@ -41,5 +41,3 @@ class Interface {
     }
   }
 }
-
-module.exports = Interface;

@@ -1,3 +1,5 @@
-const Interface = require('../interface');
+import Interface from '../interface';
 
-module.exports = new Interface('EngineInterface', 'run');
+const EngineInterface = new Interface('EngineInterface', 'run');
+
+export default EngineInterface;

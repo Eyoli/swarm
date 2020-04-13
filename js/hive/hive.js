@@ -1,26 +1,25 @@
-const UnmovableAgent = require('./unmovable-agent');
+import Agent from '../core/agent/agent';
+import RoundShape from '../core/shape/round-shape';
+import BasicPhysics from '../core/physics/basic-physics';
+import PeriodicBehavior from '../core/behavior/periodic-behavior';
 
-class Hive extends UnmovableAgent {
+import SpawnBehavior from './spawn-behavior';
+
+import {generateBee} from './hive-agent-factory';
+
+export default class Hive extends Agent {
 	constructor(position, beesInside) {
-		super(position);
-		
-		this.beesInside = beesInside || 0;
-		this.currentBees = 0;
-		this.releaseBeePeriod = 50;
-		this.lastReleaseStep = 0;
-	}
-	
-	act(world) {
-		if(this.beesInside > 0 && (world.step - this.lastReleaseStep) >= this.releaseBeePeriod) {
-			var hivePosition = {
-				x: this.shape.center.x,
-				y: this.shape.center.y
-			};
-			world.withAgent(require('./hive-agent-factory').generateBee(hivePosition));
-			
-			this.beesInside--;
-			this.lastReleaseStep = world.step;
-		}
+		super(
+			new RoundShape(position, 40), 
+			new BasicPhysics(), 
+			new PeriodicBehavior(new SpawnBehavior(source => {
+				var hivePosition = {
+					x: source.shape.center.x,
+					y: source.shape.center.y
+				};
+				return generateBee(hivePosition);
+			}, 5), 50)
+		);
 	}
 	
 	react(world, info) {
@@ -31,5 +30,3 @@ class Hive extends UnmovableAgent {
 		};
 	}
 }
-
-module.exports = Hive;

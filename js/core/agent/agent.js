@@ -1,10 +1,8 @@
-"use strict";
+import Interface from '../interface';
+import AgentInterface from './agent-interface.js';
 
-const Interface = require('../interface');
-const AgentInterface = require('./agent-interface');
-
-class Agent {
-	constructor(shape, physics) {
+export default class Agent {
+	constructor(shape, physics, behavior) {
 		Interface.checkImplements(this, AgentInterface);
 		
 		if (this.constructor === Agent) {
@@ -13,11 +11,14 @@ class Agent {
 		
 		this.physics = physics;
 		this.shape = shape;
+		this.behavior = behavior;
 		this.destroyed = false;
 	}
 	
 	act(world) {
-		throw new Error('You must implement this function');
+		if(this.behavior) {
+			this.behavior.apply(this, world);
+		}
 	}
 	
 	react(info) {
@@ -40,5 +41,3 @@ class Agent {
 		return this.destroyed;
 	}
 }
-
-module.exports = Agent;

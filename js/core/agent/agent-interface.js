@@ -1,3 +1,5 @@
-const Interface = require('../interface');
+import Interface from '../interface';
 
-module.exports = new Interface('AgentInterface', 'act', 'react', 'interact', 'getShape', 'getPhysics', 'isDestroyed');
+const AgentInterface = new Interface('AgentInterface', 'act', 'react', 'interact', 'getShape', 'getPhysics', 'isDestroyed');
+
+export default AgentInterface;

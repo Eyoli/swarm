@@ -1,8 +1,8 @@
-const CollisionFinder = require('./collision-finder');
-const BasicCollisionFinder = require('./basic-collision-finder');
-const BinarySearchTree = require('./binary-search-tree');
+import CollisionFinder from './collision-finder';
+import BasicCollisionFinder from './basic-collision-finder';
+import BinarySearchTree from './binary-search-tree';
 
-class SpatialSearchCollisionFinder extends CollisionFinder {
+export default class SpatialSearchCollisionFinder extends CollisionFinder {
 	constructor(collisionResolver, xCut, yCut) {
 		super();
 		
@@ -27,5 +27,3 @@ class SpatialSearchCollisionFinder extends CollisionFinder {
 		return collidingIndexes;
 	}
 }
-
-module.exports = SpatialSearchCollisionFinder;

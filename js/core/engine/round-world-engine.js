@@ -1,7 +1,7 @@
-const Interface = require('../interface');
-const EngineInterface = require('./engine-interface');
+import Interface from '../interface';
+import EngineInterface from './engine-interface';
 
-class RoundWorldEngine {
+export default class RoundWorldEngine {
 	constructor(width, height) {
 		Interface.checkImplements(this, EngineInterface);
 		
@@ -24,5 +24,3 @@ class RoundWorldEngine {
 		}
 	}
 }
-
-module.exports = RoundWorldEngine;

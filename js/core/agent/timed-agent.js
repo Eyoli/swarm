@@ -1,6 +1,6 @@
-const AgentDecorator = require('./agent-decorator');
+import AgentDecorator from './agent-decorator';
 
-class TimedAgent extends AgentDecorator {
+export default class TimedAgent extends AgentDecorator {
 	constructor(agent, expirationTime) {
 		super(agent);
 		
@@ -18,5 +18,3 @@ class TimedAgent extends AgentDecorator {
 		this.time++;
 	}
 }
-
-module.exports = TimedAgent;

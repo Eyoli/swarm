@@ -1,3 +1,5 @@
-const Interface = require('../interface');
+import Interface from '../interface';
 
-module.exports = new Interface('CollisionResolver', 'resolve');
+const CollisionResolver = new Interface('CollisionResolver', 'resolve');
+
+export default CollisionResolver;

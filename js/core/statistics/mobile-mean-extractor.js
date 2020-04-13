@@ -1,6 +1,6 @@
-const StatisticExtractor = require('./statistic-extractor');
+import StatisticExtractor from './statistic-extractor';
 
-class MobileMeanExtractor extends StatisticExtractor {
+export default class MobileMeanExtractor extends StatisticExtractor {
 	constructor(source, extractorFn, maxValuesNb) {
 		super(source, extractorFn);
 		
@@ -24,5 +24,3 @@ class MobileMeanExtractor extends StatisticExtractor {
 		return newValue;
 	}
 }
-
-module.exports = MobileMeanExtractor;

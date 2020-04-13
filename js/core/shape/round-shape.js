@@ -1,11 +1,9 @@
-const Shape = require('./shape');
+import Shape from './shape';
 
-class RoundShape extends Shape {
+export default class RoundShape extends Shape {
 	constructor(center, radius) {
 		super(center);
 		
 		this.radius = radius;
 	}
 }
-
-module.exports = RoundShape;

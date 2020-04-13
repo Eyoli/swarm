@@ -1,9 +1,7 @@
-"use strict";
+import Interface from '../interface';
+import EngineInterface from './engine-interface';
 
-const Interface = require('../interface');
-const EngineInterface = require('./engine-interface');
-
-class CollisionEngine {
+export default class CollisionEngine {
 	constructor(collisionFinder) {
 		Interface.checkImplements(this, EngineInterface);
 		
@@ -23,5 +21,3 @@ class CollisionEngine {
 		}
 	}
 }
-
-module.exports = CollisionEngine;

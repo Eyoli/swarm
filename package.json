@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "babel-preset-env": "^1.7.0",
+    "babel-register": "^6.26.0",
     "ejs": "^3.0.2",
     "express": "^4.17.1",
     "require": "^2.4.20",

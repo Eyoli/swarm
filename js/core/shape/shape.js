@@ -1,6 +1,4 @@
-"use strict";
-
-class Shape {
+export default class Shape {
 	constructor(center) {		
 		if (this.constructor === Shape) {
 			throw new TypeError('Abstract class cannot be instantiated directly');
@@ -9,5 +7,3 @@ class Shape {
 		this.center = center;
 	}
 }
-
-module.exports = Shape;

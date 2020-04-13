@@ -1,5 +1,5 @@
-const Interface = require('../interface');
-const CollisionResolver = require('./collision-resolver');
+import Interface from '../interface';
+import CollisionResolver from './collision-resolver';
 
 function computeDistanceInfo(p1, p2) {
 	var dx = p2.x - p1.x;
@@ -13,7 +13,7 @@ function computeDistanceInfo(p1, p2) {
 	};
 }
 
-class CircleCollisionResolver {
+export default class CircleCollisionResolver {
 	constructor() {
 		Interface.checkImplements(this, CollisionResolver);
 	}
@@ -24,5 +24,3 @@ class CircleCollisionResolver {
 		return distanceInfo.std < (shape1.radius + shape2.radius) * (shape1.radius + shape2.radius);
 	}
 }
-
-module.exports = CircleCollisionResolver;

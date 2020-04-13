@@ -1,6 +1,4 @@
-"use strict";
-
-class BinarySearchTree {
+export default class BinarySearchTree {
 	constructor() {
 		this.predicates = [];
 		this.data = {};
@@ -38,5 +36,3 @@ class BinarySearchTree {
 		return mask;
 	}
 }
-
-module.exports = BinarySearchTree;

@@ -1,13 +1,15 @@
-const UnmovableAgent = require('./unmovable-agent');
+import Agent from '../core/agent/agent';
+import RoundShape from '../core/shape/round-shape';
+import BasicPhysics from '../core/physics/basic-physics';
 
-class Pheromon extends UnmovableAgent {
+export default class Pheromon extends Agent {
 	constructor(position, sourceAngle) {
-		super(position);
+		super(
+			new RoundShape(position, 40), 
+			new BasicPhysics()
+		);
 		
 		this.sourceAngle = sourceAngle;
-	}
-	
-	act(world) {
 	}
 	
 	react(world, info) {
@@ -19,5 +21,3 @@ class Pheromon extends UnmovableAgent {
 		};
 	}
 }
-
-module.exports = Pheromon;

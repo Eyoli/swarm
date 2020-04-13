@@ -1,6 +1,6 @@
-const AgentDecorator = require('./agent-decorator');
+import AgentDecorator from './agent-decorator';
 
-class TypedAgent extends AgentDecorator {
+export default class TypedAgent extends AgentDecorator {
 	constructor(agent, type) {
 		super(agent);
 		
@@ -13,5 +13,3 @@ class TypedAgent extends AgentDecorator {
 		return info;
 	}
 }
-
-module.exports = TypedAgent;

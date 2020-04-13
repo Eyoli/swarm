@@ -1,7 +1,7 @@
-const Interface = require('../interface');
-const EngineInterface = require('./engine-interface');
+import Interface from '../interface';
+import EngineInterface from './engine-interface';
 
-class ClearEngine {
+export default class ClearEngine {
 	constructor() {
 		Interface.checkImplements(this, EngineInterface);
 	}
@@ -18,5 +18,3 @@ class ClearEngine {
 		}
 	}
 }
-
-module.exports = ClearEngine;

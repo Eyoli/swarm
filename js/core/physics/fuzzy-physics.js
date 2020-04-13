@@ -1,7 +1,7 @@
-const Physics = require('./physics');
-const BasicPhysics = require('./basic-physics');
+import Physics from './physics';
+import BasicPhysics from './basic-physics';
 
-class FuzzyPhysics extends Physics {
+export default class FuzzyPhysics extends Physics {
 	constructor(speed, acc, fuzziness) {
 		super(speed, acc, fuzziness);
 		
@@ -22,5 +22,3 @@ class FuzzyPhysics extends Physics {
 		return newCenter;
 	}
 }
-
-module.exports = FuzzyPhysics;
