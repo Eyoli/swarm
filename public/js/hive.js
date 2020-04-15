@@ -1,5 +1,3 @@
-"use strict";
-
 window.onload = function() {
 	var ctx;
     var lastTimestamp = 0;
@@ -21,6 +19,15 @@ window.onload = function() {
 	};
 	
 	var socket = io.connect('http://localhost:3000/hive');
+	
+	let ui = new GameUI();
+	ui.layout('props').at(context.length - 200)
+		.preDraw(ctx => {
+			ctx.fillStyle = "#000000";
+		})
+		.property('collisions').at(0, 30).withLabel('Collision tests').up()
+		.property('agents').at(0, 60).withLabel('Agents').up()
+		.property('behaviors').at(0, 90).withLabel('Behaviors');
 	
 	function init() {
 		ctx = document.getElementById("myCanvas").getContext("2d");
@@ -72,14 +79,17 @@ window.onload = function() {
         ctx.clearRect(0, 0, context.length, context.width);
 		
 		ctx.font = "20px Georgia";
-		ctx.fillText(collisionsMobileMean.toFixed(0), context.length - 100, 30);
-		ctx.fillText(agentsMobileMean.toFixed(0), context.length - 100, 60);
-		ctx.fillText(behaviorsMobileMean.toFixed(0), context.length - 100, 90);
-		
+		ui.layout('props')
+			.property("collisions").withValue(collisionsMobileMean.toFixed(0)).up()
+			.property("agents").withValue(agentsMobileMean.toFixed(0)).up()
+			.property("behaviors").withValue(behaviorsMobileMean.toFixed(0));
+				
 		agents.hives.forEach(a => drawHive(a));
 		agents.flowers.forEach(a => drawFlower(a));
 		agents.pheromons.forEach(a => drawPheromon(a));
 		agents.bees.forEach(a => drawBee(a));
+		
+		ui.draw(ctx);
 		
 		window.requestAnimationFrame(draw);
 	}

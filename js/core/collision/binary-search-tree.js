@@ -1,3 +1,6 @@
+import Interface from '../interface';
+import CollisionResolver from './collision-resolver';
+
 export default class BinarySearchTree {
 	constructor() {
 		this.predicates = [];

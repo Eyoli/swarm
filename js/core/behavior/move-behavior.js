@@ -1,12 +1,12 @@
 import Interface from '../interface';
-import BehaviorInterface from './behavior-interface';
+import Behavior from './behavior';
 
-export default class MoveBehavior {
-	constructor() {
-		Interface.checkImplements(this, BehaviorInterface);
+export default class MoveBehavior extends Behavior {
+	constructor(agent) {
+		super(agent);
 	}
 	
-	apply(agent, world) {
-		agent.getShape().center = agent.getPhysics().move(agent.getShape().center);
+	apply(world) {
+		this.agent.getShape().center = this.agent.getPhysics().move(this.agent.getShape().center);
 	}
 }

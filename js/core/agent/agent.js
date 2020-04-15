@@ -2,7 +2,7 @@ import Interface from '../interface';
 import AgentInterface from './agent-interface.js';
 
 export default class Agent {
-	constructor(shape, physics, behavior) {
+	constructor(shape, physics) {
 		Interface.checkImplements(this, AgentInterface);
 		
 		if (this.constructor === Agent) {
@@ -11,14 +11,7 @@ export default class Agent {
 		
 		this.physics = physics;
 		this.shape = shape;
-		this.behavior = behavior;
 		this.destroyed = false;
-	}
-	
-	act(world) {
-		if(this.behavior) {
-			this.behavior.apply(this, world);
-		}
 	}
 	
 	react(info) {
@@ -35,6 +28,10 @@ export default class Agent {
 	
 	getPhysics() {
 		return this.physics;
+	}
+	
+	destroy() {
+		this.destroyed = true;
 	}
 	
 	isDestroyed() {

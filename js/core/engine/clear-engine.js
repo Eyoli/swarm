@@ -7,14 +7,10 @@ export default class ClearEngine {
 	}
 	
 	run(world) {
+		// Remove destroyed behaviors
+		world.behaviors = world.behaviors.filter(b => !b.isDestroyed());
+		
 		// Remove destroyed agents
-		var i = 0;
-		while(i < world.agents.length) {
-			if(world.agents[i].isDestroyed()) {
-				world.agents.splice(i, 1);
-			} else {
-				i++;
-			}
-		}
+		world.agents = world.agents.filter(a => !a.isDestroyed());
 	}
 }

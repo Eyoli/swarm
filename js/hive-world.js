@@ -20,6 +20,10 @@ function mapAgentToClient(agent) {
 
 export default class HiveWorld {
 	constructor(width, length) {
+		this.length = length;
+		this.width = width;
+		this.pause = true;
+		
 		//var collisionEngine = new CollisionEngine(new BasicCollisionFinder());
 		this.collisionEngine = new CollisionEngine(
 			new SpatialSearchCollisionFinder(
@@ -30,23 +34,33 @@ export default class HiveWorld {
 					.withEngine(new RoundWorldEngine(width, length))
 					.withEngine(this.collisionEngine);
 					
-		this.world.addAgent(generateFlower({x: 300, y: 300}))
-		this.world.addAgent(generateHive({x: 10, y: 10}, 5));
+		generateFlower(this.world, {x: 300, y: 300});
+		generateHive(this.world, {x: 10, y: 10}, 5);
 					
 		this.collisionsMobileMean = new MobileMeanExtractor(this.collisionEngine, e => e.collisionFinder.getLastComputations(), 20);
 		this.agentsMobileMean = new MobileMeanExtractor(this.world, w => w.agents.length, 20);
+		this.behaviorsMobileMean = new MobileMeanExtractor(this.world, w => w.behaviors.length, 20);
 	}
 	
 	advance() {
-		this.world.advance();
+		if(!this.pause) {
+			this.world.advance();
+		}
+	}
+	
+	togglePause(pause) {
+		this.pause = pause;
 	}
 	
 	getState() {
 		return {
 			agents: this.world.agents.map(mapAgentToClient),
 			collisionsMobileMean: this.collisionsMobileMean.update(),
-			agentsMobileMean: this.agentsMobileMean.update()
+			agentsMobileMean: this.agentsMobileMean.update(),
+			behaviorsMobileMean: this.behaviorsMobileMean.update(),
+			length: this.length,
+			width: this.width
 			
-		}
+		};
 	}
 }

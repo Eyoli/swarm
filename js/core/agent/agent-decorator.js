@@ -12,10 +12,6 @@ export default class AgentDecorator {
 		this.agent = agent;
 	}
 	
-	act(world) {
-		this.agent.act(world);
-	}
-	
 	react(world, info) {
 		this.agent.react(world, info);
 	}
@@ -30,6 +26,10 @@ export default class AgentDecorator {
 	
 	getPhysics() {
 		return this.agent.getPhysics();
+	}
+	
+	destroy() {
+		this.agent.destroy();
 	}
 	
 	isDestroyed() {

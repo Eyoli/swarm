@@ -3,8 +3,12 @@ export default class World {
 		
 		this.agents = [];
 		this.engines = [];
+		this.behaviors = [];
+		
 		this.maxAgents = maxAgents;
 		this.step = 0;
+		
+		this.mouse = {};
 	}
 	
 	withEngine(engine) {
@@ -15,9 +19,21 @@ export default class World {
 	addAgent(agent) {
 		if(this.agents.length < this.maxAgents) {
 			this.agents.push(agent);
-			return true;
+			return agent;
 		}
-		return false;
+		return null;
+	}
+	
+	addAgentWithBehavior(agent, behavior) {
+		if(this.addAgent(agent)) {
+			this.addBehavior(behavior);
+			return agent;
+		}
+		return null;
+	}
+	
+	addBehavior(behavior) {
+		this.behaviors.push(behavior);
 	}
 	
 	advance() {		
@@ -26,9 +42,9 @@ export default class World {
 			this.engines[i].run(this);
 		}
 		
-		// Make agents act
-		for(var i = 0; i < this.agents.length; i++) {
-			this.agents[i].act(this);
+		// Run behaviors
+		for(var i = 0; i < this.behaviors.length; i++) {
+			this.behaviors[i].apply(this);
 		}
 		
 		this.step++;

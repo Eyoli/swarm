@@ -1,6 +1,6 @@
-import AgentDecorator from './agent-decorator';
+import Behavior from './behavior';
 
-export default class TimedAgent extends AgentDecorator {
+export default class TransientBehavior extends Behavior {
 	constructor(agent, expirationTime) {
 		super(agent);
 		
@@ -8,11 +8,9 @@ export default class TimedAgent extends AgentDecorator {
 		this.time = 0;
 	}
 	
-	act(world) {
-		this.agent.act(world);
-		
+	apply(world) {
 		if(this.time > this.expirationTime) {
-			this.agent.destroyed = true;
+			this.agent.destroy();
 		}
 		
 		this.time++;
