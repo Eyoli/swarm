@@ -2,7 +2,7 @@ export default class World {
 	constructor(maxAgents) {
 		
 		this.agents = [];
-		this.engines = [];
+		this.engines = {};
 		this.behaviors = [];
 		
 		this.maxAgents = maxAgents;
@@ -11,8 +11,8 @@ export default class World {
 		this.mouse = {};
 	}
 	
-	withEngine(engine) {
-		this.engines.push(engine);
+	withEngine(name, engine) {
+		this.engines[name] = engine;
 		return this;
 	}
 	
@@ -38,12 +38,12 @@ export default class World {
 	
 	advance() {		
 		// Run engines
-		for(var i = 0; i < this.engines.length; i++) {
-			this.engines[i].run(this);
+		for(let name in this.engines) {
+			this.engines[name].run(this);
 		}
 		
 		// Run behaviors
-		for(var i = 0; i < this.behaviors.length; i++) {
+		for(let i = 0; i < this.behaviors.length; i++) {
 			this.behaviors[i].apply(this);
 		}
 		

@@ -6,4 +6,12 @@ export default class Shape {
 		
 		this.center = center;
 	}
+	
+	contains(point) {
+		throw new Error('You must implement this function');
+	}
+	
+	boundary() {
+		throw new Error('You must implement this function');
+	}
 }

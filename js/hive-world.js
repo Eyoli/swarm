@@ -30,9 +30,9 @@ export default class HiveWorld {
 				new CircleCollisionResolver(), width / 2, length / 2));
 
 		this.world = new World(100)
-					.withEngine(new ClearEngine())
-					.withEngine(new RoundWorldEngine(width, length))
-					.withEngine(this.collisionEngine);
+					.withEngine('clear', new ClearEngine())
+					.withEngine('round', new RoundWorldEngine(width, length))
+					.withEngine('collision', this.collisionEngine);
 					
 		generateFlower(this.world, {x: 300, y: 300});
 		generateHive(this.world, {x: 10, y: 10}, 5);

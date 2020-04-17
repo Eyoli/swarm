@@ -6,8 +6,12 @@
     </head>
 
     <body>
-		<div>
-            <a href="/hive">Hive sample</a>
-        </div>
+		<ul>
+		<% list.forEach(function(params){ %>
+			<li>
+				<a style="font-size: 2em" href="/<%= params.name %>"><%= params.name %> sample</a>
+			</li>
+		<% }); %>
+        </ul>
     </body>
 </html>

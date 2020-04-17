@@ -1,5 +1,5 @@
 window.onload = function() {
-	var ctx;
+	var ctx = document.getElementById("myCanvas").getContext("2d");
     var lastTimestamp = 0;
     var interval = 100;
 	var start = true;
@@ -28,11 +28,6 @@ window.onload = function() {
 		.property('collisions').at(0, 30).withLabel('Collision tests').up()
 		.property('agents').at(0, 60).withLabel('Agents').up()
 		.property('behaviors').at(0, 90).withLabel('Behaviors');
-	
-	function init() {
-		ctx = document.getElementById("myCanvas").getContext("2d");
-		window.requestAnimationFrame(draw);
-	}
 	
 	socket.on('update', function(data) {
 		collisionsMobileMean = data.collisionsMobileMean;
@@ -134,5 +129,5 @@ window.onload = function() {
 		ctx.fill();
 	}
     
-    init();
+    window.requestAnimationFrame(draw);
 };
