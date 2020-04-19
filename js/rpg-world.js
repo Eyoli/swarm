@@ -2,6 +2,7 @@ import World from './core/world';
 import ClearEngine from './core/engine/clear-engine';
 import GridEngine from './core/engine/grid-engine';
 import MobileMeanExtractor from './core/statistics/mobile-mean-extractor';
+import {PathFinder} from './core/engine/path-finder';
 
 import Agent from './core/agent/agent';
 import {Polygone} from './core/shape/polygone';
@@ -46,12 +47,12 @@ export default class RPGWorld {
 			{x:0,y:3}, 
 			{x:5,y:5},
 			{x:5,y:1});
-		//console.log(p.contains({x:4,y:1}));
-		//console.log(p.contains({x:4,y:2}));
-		console.log(p.contains({x:4,y:3}));
-		//console.log(p.contains({x:4,y:4}));
-		
 		this.world.addAgent(new Wall(p));
+		
+		this.gridEngine.run(this.world);
+		
+		let pathFinder = new PathFinder();
+		this.shortestPath = pathFinder.getShortestPath(this.gridEngine, {x:0, y:0}, {x:9, y:9});
 										
 		this.agentsMobileMean = new MobileMeanExtractor(this.world, w => w.agents.length, 20);
 		this.behaviorsMobileMean = new MobileMeanExtractor(this.world, w => w.behaviors.length, 20);
@@ -74,7 +75,8 @@ export default class RPGWorld {
 			behaviorsMobileMean: this.behaviorsMobileMean.update(),
 			length: this.length,
 			width: this.width,
-			grid: this.gridEngine.grid
+			grid: this.gridEngine.grid,
+			path: this.shortestPath
 			
 		};
 	}

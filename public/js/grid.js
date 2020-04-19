@@ -34,6 +34,7 @@ window.onload = function() {
 			
 		state.agents = data.agents || [];
 		state.grid = data.grid;
+		state.path = data.path;
     })
     
 	function draw(timestamp) {
@@ -44,8 +45,13 @@ window.onload = function() {
 		ui.layout('props')
 			.property("agents").withValue(agentsMobileMean.toFixed(0)).up()
 			.property("behaviors").withValue(behaviorsMobileMean.toFixed(0));
-				
-		drawGrid(state.grid);
+		
+		if(state.grid) {
+			let nodeSpan = context.width / state.grid.length;
+			drawGrid(state.grid, nodeSpan);
+			drawPath(state.path, nodeSpan);
+		}
+		
 		state.agents.forEach(a => drawPolygone(a));
 		
 		ui.draw(ctx);
@@ -53,21 +59,21 @@ window.onload = function() {
 		window.requestAnimationFrame(draw);
 	}
 	
-	function drawGrid(grid) {
+	function drawGrid(grid, span) {
 		ctx.globalAlpha = 0.2;
-		
-		if(grid) {
-			let nodeSpan = context.width / grid.length;
-			
-			grid.forEach(
-				(row, i) => row.forEach((node, j) => {
-					ctx.beginPath();
-					ctx.fillStyle = node ? "#ff0000" : "#000000";
-					ctx.beginPath();
-					ctx.arc((nodeSpan / 2) + i * nodeSpan, (nodeSpan / 2) + j * nodeSpan, nodeSpan / 2, 0, 2 * Math.PI);
-					ctx.fill();
-				}));
-		}
+		grid.forEach((row, i) => row.forEach((node, j) => drawNode(i, j, node ? "#ff0000" : "#000000", span)));
+	}
+	
+	function drawPath(path, span) {
+		path.forEach(node => drawNode(node.nx, node.ny, "#00ff00", span));
+	}
+	
+	function drawNode(i, j, color, span) {
+		ctx.beginPath();
+		ctx.fillStyle = color;
+		ctx.beginPath();
+		ctx.arc((span / 2) + i * span, (span / 2) + j * span, span / 2, 0, 2 * Math.PI);
+		ctx.fill();
 	}
 	
 	function drawPolygone(polygone) {
