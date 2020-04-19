@@ -11,7 +11,9 @@ window.onload = function() {
 	
 	var agentsMobileMean = 0, behaviorsMobileMean = 0;
 	
-	var agents = [];
+	var state = {
+		agents: []
+	};
 	
 	var socket = io.connect('http://localhost:3000/grid');
 	
@@ -26,19 +28,13 @@ window.onload = function() {
 	socket.on('update', function(data) {
 		agentsMobileMean = data.agentsMobileMean;
 		behaviorsMobileMean = data.behaviorsMobileMean;
+		
+		state.cx = context.length * 1.0 / data.length;
+		state.cy = context.width * 1.0 / data.width;
 			
-		agents = data.agents || [];
-		agents.forEach((agent, i) => {
-			agent.shape.center = correctPosition(agent.shape.center, context.length * 1.0 / data.length, context.width * 1.0 / data.width);
-		});
+		state.agents = data.agents || [];
+		state.grid = data.grid;
     })
-	
-	function correctPosition(position, lengthCorrection, widthCorrection) {
-		return {
-			x: position.x * lengthCorrection,
-			y: position.y * widthCorrection
-		};
-	}
     
 	function draw(timestamp) {
 					        
@@ -49,22 +45,42 @@ window.onload = function() {
 			.property("agents").withValue(agentsMobileMean.toFixed(0)).up()
 			.property("behaviors").withValue(behaviorsMobileMean.toFixed(0));
 				
-		agents.forEach(a => drawPolygone(a));
+		drawGrid(state.grid);
+		state.agents.forEach(a => drawPolygone(a));
 		
 		ui.draw(ctx);
 		
 		window.requestAnimationFrame(draw);
 	}
 	
+	function drawGrid(grid) {
+		ctx.globalAlpha = 0.2;
+		
+		if(grid) {
+			let nodeSpan = context.width / grid.length;
+			
+			grid.forEach(
+				(row, i) => row.forEach((node, j) => {
+					ctx.beginPath();
+					ctx.fillStyle = node ? "#ff0000" : "#000000";
+					ctx.beginPath();
+					ctx.arc((nodeSpan / 2) + i * nodeSpan, (nodeSpan / 2) + j * nodeSpan, nodeSpan / 2, 0, 2 * Math.PI);
+					ctx.fill();
+				}));
+		}
+	}
+	
 	function drawPolygone(polygone) {
+		ctx.globalAlpha = 1;
+		
 		var shape = polygone.shape;
 		
 		ctx.beginPath(); 
-		ctx.moveTo(shape.center.x + shape.summits[0].x, shape.center.y + shape.summits[0].y);
+		ctx.moveTo(state.cx * (shape.center.x + shape.summits[0].x), state.cy * (shape.center.y + shape.summits[0].y));
 		shape.summits.forEach(summit => {
-			ctx.lineTo(shape.center.x + summit.x, shape.center.y + summit.y);
+			ctx.lineTo(state.cx * (shape.center.x + summit.x), state.cy * (shape.center.y + summit.y));
 		});
-		ctx.lineTo(shape.center.x + shape.summits[0].x, shape.center.y + shape.summits[0].y);
+		ctx.lineTo(state.cx * (shape.center.x + shape.summits[0].x), state.cx * (shape.center.y + shape.summits[0].y));
 		ctx.stroke();
 	}
     

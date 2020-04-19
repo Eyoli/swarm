@@ -1,45 +1,45 @@
 import Shape from './shape';
 
-function computeCenter(points) {
-	let center = points.reduce((res, s) => {
-			res.x += s.x;
-			res.y += s.y;
-			return res;
-		}, {x: 0, y: 0});
-	center.x = center.x * 1.0 / points.length;
-	center.y = center.y * 1.0 / points.length;
-	
-	return center;
-}
-
-function computeBoundingRect(points) {
-	let extremities = {
+function computeExtremities(points) {
+	let init = {
 		xMin: points[0].x,
 		xMax: points[0].x,
 		yMin: points[0].y,
 		yMax: points[0].y
 	};
 	
-	for(let i = 1; i < points.length; i++) {
-		if(extremities.xMin > points[i].x) {
-			extremities.xMin = points[i].x;
+	return points.reduce((res, point) => {
+		if(res.xMin > point.x) {
+			res.xMin = point.x;
 		}
-		if(extremities.xMax < points[i].x) {
-			extremities.xMax = points[i].x;
+		if(res.xMax < point.x) {
+			res.xMax = point.x;
 		}
-		if(extremities.yMin > points[i].y) {
-			extremities.yMin = points[i].y;
+		if(res.yMin > point.y) {
+			res.yMin = point.y;
 		}
-		if(extremities.yMax < points[i].y) {
-			extremities.yMax = points[i].y;
+		if(res.yMax < point.y) {
+			res.yMax = point.y;
 		}
-	}
+		return res;
+	}, init);
+}
+
+function computeCenter(points) {
+	let extremities = computeExtremities(points);
+	return {
+		x: (extremities.xMax + extremities.xMin) / 2,
+		y: (extremities.yMax + extremities.yMin) / 2
+	};
+}
+
+function computeBoundingRect(points) {
+	let extremities = computeExtremities(points);
 	
 	return new Rectangle(
-		{x: extremities.xMin, y: extremities.yMax},
-		{x: extremities.xMax, y: extremities.yMax},
-		{x: extremities.xMax, y: extremities.yMin},
-		{x: extremities.xMin, y: extremities.yMin}
+		{x: extremities.xMin, y: extremities.yMin},
+		extremities.xMax - extremities.xMin,
+		extremities.yMax - extremities.yMin
 	);
 }
 
@@ -67,7 +67,7 @@ export class Polygone extends Shape {
 	}
 	
 	contains(point) {
-		let test = iTranslate(point, center);
+		let test = iTranslate(point, this.center);
 		
 		let yMax = Math.max(...this.summits.map(s => s.y));
 		let R = {
@@ -85,12 +85,17 @@ export class Polygone extends Shape {
 			PiPlus1 = i === this.summits.length - 1 ? this.summits[0] : this.summits[i+1];
 			if(Pi.x != PiPlus1.x) {
 				m = (PiPlus1.y - Pi.y) / (PiPlus1.x - Pi.x);
-				p = Pi.y - m * Pi.x;
-				I.y = m * Pi.x + p;
-				
-				if((I.x - Pi.x) * (I.x - PiPlus1.x) < 0 && (I.y - R.y) * (I.y - test.y) < 0) {
-					c++;
-				}
+				p = Pi.y - (m * Pi.x);
+				I.y = m * I.x + p;
+			}
+			//console.log('Pi:', translate(Pi, this.center));
+			//console.log('Pi+1:', translate(PiPlus1, this.center));
+			//console.log('m:', m, 'p:', p);
+			//console.log('I:', translate(I, this.center));
+			
+			if((I.x - Pi.x) * (I.x - PiPlus1.x) < 0 
+				&& (I.y - R.y) * (I.y - test.y) < 0) {
+				c++;
 			}
 		}
 		
@@ -98,29 +103,41 @@ export class Polygone extends Shape {
 	}
 	
 	boundary() {
-		return computeBoundingRect(this.summits);
+		if(!this.boundingRect) {
+			this.boundingRect = computeBoundingRect(this.summits);
+		}
+		return this.boundingRect;
 	}
 }
 
 export class Rectangle extends Polygone {
-	constructor(topLeft, topRight, downRight, downLeft) {
-		super(topLeft, topRight, downRight, downLeft);
+	constructor({x, y}, length, width) {
+		super(
+			{x: x, y: y}, 
+			{x: x + length, y: y}, 
+			{x: x + length, y: y + width}, 
+			{x: x, y: y + width}
+		);
 	}
 	
 	topLeft() {
-		return translate(this.summits[0], this.center);
+		return this.summits[0];
 	}
 	
 	topRight() {
-		return translate(this.summits[1], this.center);
+		return this.summits[1];
 	}
 	
 	downRight() {
-		return translate(this.summits[2], this.center);
+		return this.summits[2];
 	}
 	
 	downLeft() {
-		return translate(this.summits[3], this.center);
+		return this.summits[3];
+	}
+	
+	boundary() {
+		return this;
 	}
 }
 

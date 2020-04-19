@@ -35,18 +35,23 @@ export default class RPGWorld {
 		this.width = width;
 		this.pause = true;
 		
-		this.gridEngine = new GridEngine(20, 20);
+		this.gridEngine = new GridEngine(width, length, 10, 10);
 
 		this.world = new World(100)
 					.withEngine('clear', new ClearEngine())
 					.withEngine('grid', this.gridEngine);
 		
-		let c = new Wall(new Polygone(
-			{x:50,y:50}, 
-			{x:50,y:100}, 
-			{x:100,y:100}, 
-			{x:100,y:50}));
-		this.world.addAgent(c);
+		let p = new Polygone(
+			{x:1,y:1}, 
+			{x:0,y:3}, 
+			{x:5,y:5},
+			{x:5,y:1});
+		//console.log(p.contains({x:4,y:1}));
+		//console.log(p.contains({x:4,y:2}));
+		console.log(p.contains({x:4,y:3}));
+		//console.log(p.contains({x:4,y:4}));
+		
+		this.world.addAgent(new Wall(p));
 										
 		this.agentsMobileMean = new MobileMeanExtractor(this.world, w => w.agents.length, 20);
 		this.behaviorsMobileMean = new MobileMeanExtractor(this.world, w => w.behaviors.length, 20);

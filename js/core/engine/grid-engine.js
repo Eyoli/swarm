@@ -1,47 +1,58 @@
-import {Rectangle} from '../shape/polygone';
+import Interface from '../interface';
+import EngineInterface from './engine-interface';
 
 export default class GridEngine {
-	constructor(nx, ny) {
+	constructor(width, length, nx, ny) {
+		Interface.checkImplements(this, EngineInterface);
+		
+		this.width = width;
+		this.length = length;
 		this.nx = nx;
 		this.ny = ny;
+		this.dx = this.width / this.nx;
+		this.dy = this.length / this.ny;
 		this.grid = [];
 		
 		for(let i = 0; i < nx; i++) {
 			this.grid[i] = [];
 			for(let j = 0; j < ny; j++) {
-				this.grid[i][j] = true;
+				this.grid[i][j] = false;
 			}
 		}
 	}
 	
 	reset() {
-		for(let i = 0; i < nx; i++) {
-			for(let j = 0; j < ny; j++) {
+		for(let i = 0; i < this.nx; i++) {
+			for(let j = 0; j < this.ny; j++) {
 				this.grid[i][j] = false;
 			}
 		}
 	}
 	
-	updateGrid({nx1, nx2, ny1, ny2}, shape) {
+	updateGrid(shape) {
+		const rect = shape.boundary();
+		
+		const nx1 = Math.floor((shape.center.x + rect.topLeft().x) * this.nx / this.width);
+		const nx2 = Math.floor((shape.center.x + rect.downRight().x) * this.nx / this.width);
+		const ny1 = Math.floor((shape.center.y + rect.topLeft().y) * this.ny / this.length);
+		const ny2 = Math.floor((shape.center.y + rect.downRight().y) * this.ny / this.length);
+		
 		for(let i = nx1; i < nx2; i++) {
 			for(let j = ny1; j < ny2; j++) {
-				this.grid[i][j] = false;
+				this.grid[i][j] = shape.contains({
+					x: (this.dx / 2) + i * this.dx, 
+					y: (this.dy / 2) + j * this.dy
+				});
 			}
 		}
 	}
 	
 	run(world) {
+		this.reset();
+		
 		for(let i = 0; i < world.agents.length; i++) {
 			const shape = world.agents[i].getShape();
-			const rect = shape.boundary();
-			const start = rect.downLeft();
-			const end = rect.topRight();
-			this.updateGrid({
-				nx1: start.x * this.nx / world.width,
-				nx2: end.x * this.nx / world.width,
-				ny1: start.y * this.ny / world.length,
-				ny2: end.y * this.ny / world.length
-			}, shape);
+			this.updateGrid(shape);
 		}
 	}
 }
