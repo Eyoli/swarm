@@ -28,7 +28,7 @@ var hiveWorld = new HiveWorld(WORLD_WIDTH, WORLD_LENGTH);
 samplePageManager.addSample('hive', 'hive.ejs', hiveWorld);
 
 // RPG world settings
-var rpgWorld = new RPGWorld(WORLD_WIDTH, WORLD_LENGTH);
+var rpgWorld = new RPGWorld(10, 10);
 samplePageManager.addSample('grid', 'grid.ejs', rpgWorld);
 
 app.get('/', function (req, res) {
