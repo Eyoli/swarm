@@ -1,12 +1,12 @@
-import World from './core/world';
-import ClearEngine from './core/engine/clear-engine';
+import World from './core/model/world';
+import ClearEngine from './core/model/engine/clear-engine';
 import WorldGrid from './core/service/path/world-grid';
 import GridService from './core/service/grid-service';
 import MobileMeanExtractor from './core/statistics/mobile-mean-extractor';
 
-import Agent from './core/agent/agent';
-import Polygone from './core/shape/polygone';
-import BasicPhysics from './core/physics/basic-physics';
+import Agent from './core/model/agent/agent';
+import Polygone from './core/model/shape/polygone';
+import BasicPhysics from './core/model/physics/basic-physics';
 
 class Wall extends Agent {
 	constructor(polygone) {

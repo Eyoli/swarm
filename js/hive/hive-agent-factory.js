@@ -1,7 +1,7 @@
-import TypedAgent from '../core/agent/typed-agent';
+import TypedAgent from '../core/model/agent/typed-agent';
 
-import ComposedBehavior from '../core/behavior/composed-behavior';
-import MoveBehavior from '../utils/behavior/move-behavior';
+import ComposedBehavior from '../core/model/behavior/composed-behavior';
+import FuzzyMoveBehavior from '../utils/behavior/fuzzy-move-behavior';
 import PeriodicBehavior from '../utils/behavior/periodic-behavior';
 import GeneratorBehavior from'../utils/behavior/generator-behavior';
 import TransientBehavior from'../utils/behavior/transient-behavior';
@@ -45,10 +45,15 @@ class ReleasePheromonBehavior extends GeneratorBehavior {
 export const generateBee = (world, position) => {
 	var bee = new TypedAgent(new Bee(position, 2 * Math.PI * Math.random()), "BEE");
 	
+	var fuzziness = {
+		amp: 3,
+		period: 25
+	};
+	
 	return world.addAgentWithBehavior(
 		bee,
 		new ComposedBehavior(
-				new MoveBehavior(bee),
+				new FuzzyMoveBehavior(bee, fuzziness),
 				new PeriodicBehavior(
 					new ReleasePheromonBehavior(bee), 30)));
 };

@@ -1,4 +1,4 @@
-import Rectangle from './shape/rectangle';
+import Rectangle from './model/shape/rectangle';
 
 export const computeDistanceInfo = function(p1, p2) {
 	var dx = p2.x - p1.x;

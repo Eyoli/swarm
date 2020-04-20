@@ -1,6 +1,6 @@
-import Interface from '../interface';
+import Interface from '../../interface';
 import CollisionResolver from './collision-resolver';
-import {computeDistanceInfo} from '../math';
+import {computeDistanceInfo} from '../../math';
 
 export default class CircleCollisionResolver {
 	constructor() {

@@ -1,4 +1,4 @@
-import Interface from '../interface';
+import Interface from '../../interface';
 import CollisionResolver from './collision-resolver';
 
 export default class BinarySearchTree {

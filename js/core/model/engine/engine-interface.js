@@ -1,4 +1,4 @@
-import Interface from '../interface';
+import Interface from '../../interface';
 
 const EngineInterface = new Interface('EngineInterface', 'run');
 

@@ -1,4 +1,4 @@
-import Interface from '../interface';
+import Interface from '../../interface';
 import AgentInterface from './agent-interface';
 
 export default class AgentDecorator {

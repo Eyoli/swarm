@@ -1,5 +1,5 @@
 import Interface from '../../core/interface';
-import BehaviorInterface from '../../core/behavior/behavior-interface';
+import BehaviorInterface from '../../core/model/behavior/behavior-interface';
 
 export default class PeriodicBehavior {
 	constructor(behavior, period) {

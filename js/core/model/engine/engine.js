@@ -1,4 +1,4 @@
-import Interface from '../interface';
+import Interface from '../../interface';
 import EngineInterface from './engine-interface';
 
 export default class CollisionEngine {

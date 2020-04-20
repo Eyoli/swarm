@@ -1,4 +1,4 @@
-import Interface from '../interface';
+import Interface from '../../interface';
 
 const CollisionResolver = new Interface('CollisionResolver', 'resolve');
 

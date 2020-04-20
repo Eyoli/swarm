@@ -1,9 +1,9 @@
 "use strict";
 
 import Interface from '../core/interface';
-import Agent from '../core/agent/agent';
-import RoundShape from '../core/shape/round-shape';
-import FuzzyPhysics from '../core/physics/fuzzy-physics';
+import Agent from '../core/model/agent/agent';
+import Circle from '../core/model/shape/circle';
+import BasicPhysics from '../core/model/physics/basic-physics';
 
 import {generatePheromon} from './hive-agent-factory';
 
@@ -11,14 +11,9 @@ export default class Bee extends Agent {
 	constructor(position, angle) {
 		var speed = {amp: 0, angle: angle, max: 10};
 		
-		var fuzziness = {
-			amp: 3,
-			period: 25
-		};
-		
 		super(
-			new RoundShape(position, 10), 
-			new FuzzyPhysics(speed, 0.1, fuzziness)
+			new Circle(position, 10), 
+			new BasicPhysics(speed, 0.1)
 		);
 		
 		this.searchingFlower = true;

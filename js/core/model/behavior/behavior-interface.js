@@ -1,4 +1,4 @@
-import Interface from '../interface';
+import Interface from '../../interface';
 
 const BehaviorInterface = new Interface('BehaviorInterface', 'apply', 'isDestroyed');
 

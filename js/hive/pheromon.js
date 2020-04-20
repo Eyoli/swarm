@@ -1,11 +1,11 @@
-import Agent from '../core/agent/agent';
-import RoundShape from '../core/shape/round-shape';
-import BasicPhysics from '../core/physics/basic-physics';
+import Agent from '../core/model/agent/agent';
+import Circle from '../core/model/shape/circle';
+import BasicPhysics from '../core/model/physics/basic-physics';
 
 export default class Pheromon extends Agent {
 	constructor(position, sourceAngle) {
 		super(
-			new RoundShape(position, 40), 
+			new Circle(position, 40), 
 			new BasicPhysics()
 		);
 		

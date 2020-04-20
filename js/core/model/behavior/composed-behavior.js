@@ -1,4 +1,4 @@
-import Interface from '../interface';
+import Interface from '../../interface';
 import BehaviorInterface from './behavior-interface'
 
 export default class ComposedBehavior {

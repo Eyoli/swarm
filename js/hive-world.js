@@ -1,10 +1,10 @@
-import SpatialSearchCollisionFinder from './core/collision/spatial-search-collision-finder';
-import CircleCollisionResolver from './core/collision/circle-collision-resolver';
-import World from './core/world';
+import SpatialSearchCollisionFinder from './core/model/collision/spatial-search-collision-finder';
+import CircleCollisionResolver from './core/model/collision/circle-collision-resolver';
+import World from './core/model/world';
 
-import CollisionEngine from './core/engine/collision-engine';
+import CollisionEngine from './core/model/engine/collision-engine';
 import RoundWorldEngine from './utils/engine/round-world-engine';
-import ClearEngine from './core/engine/clear-engine';
+import ClearEngine from './core/model/engine/clear-engine';
 
 import MobileMeanExtractor from './core/statistics/mobile-mean-extractor';
 

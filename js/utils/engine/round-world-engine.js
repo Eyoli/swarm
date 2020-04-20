@@ -1,5 +1,5 @@
 import Interface from '../../core/interface';
-import EngineInterface from '../../core/engine/engine-interface';
+import EngineInterface from '../../core/model/engine/engine-interface';
 
 export default class RoundWorldEngine {
 	constructor(width, height) {

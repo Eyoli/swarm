@@ -1,5 +1,5 @@
 import Shape from './shape';
-import {computeCenter, iTranslate, computeBoundingRect} from '../math'
+import {computeCenter, iTranslate, computeBoundingRect} from '../../math'
 
 export default class Polygone extends Shape {
 	constructor(...summits) {
