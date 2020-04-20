@@ -1,4 +1,4 @@
-import Interface from '../interface';
+import Interface from '../../interface';
 
 export const PathFinderClient = new Interface('PathFinderClient', 'getClosestNode', 'getNeighbours', 'getNodeKey', 'costBetween', 'distanceBetween');
 
@@ -20,6 +20,7 @@ export class PathFinder {
 	getShortestPath(client, start, end) {
 		const startNode = client.getClosestNode(start);
 		const endNode = client.getClosestNode(end);
+		const endNodeKey = client.getNodeKey(endNode);
 				
 		const nodesState = [];
 		
@@ -28,15 +29,15 @@ export class PathFinder {
 		const candidates = [];
 		
 		while(currentNode 
-			&& client.getNodeKey(currentNode) !== client.getNodeKey(endNode)) {
+			&& client.getNodeKey(currentNode) !== endNodeKey) {
 			//console.log('node: ', currentNode);
 			
 			getNodeState(client.getNodeKey(currentNode), nodesState).tested = true;
 			
-			const neightbours = client.getNeighbours(currentNode);
-			//console.log('neightbours: ', neightbours);
+			const neighbours = client.getNeighbours(currentNode);
+			//console.log('neighbours: ', neighbours);
 			
-			neightbours.forEach((neighbour, i) => {
+			neighbours.forEach((neighbour, i) => {
 				const state = getNodeState(client.getNodeKey(neighbour), nodesState);
 				const costToNode = client.costBetween(currentNode, neighbour);
 				if(!state.tested) {

@@ -3,6 +3,7 @@ export default class World {
 		
 		this.agents = [];
 		this.engines = {};
+		this.services = {};
 		this.behaviors = [];
 		
 		this.maxAgents = maxAgents;
@@ -14,6 +15,15 @@ export default class World {
 	withEngine(name, engine) {
 		this.engines[name] = engine;
 		return this;
+	}
+	
+	withService(name, service) {
+		this.services[name] = service;
+		return this;
+	}
+	
+	getService(name) {
+		return this.services[name];
 	}
 	
 	addAgent(agent) {

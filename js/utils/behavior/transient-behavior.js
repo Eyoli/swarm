@@ -1,4 +1,4 @@
-import Behavior from './behavior';
+import Behavior from '../../core/behavior/behavior';
 
 export default class TransientBehavior extends Behavior {
 	constructor(agent, expirationTime) {

@@ -1,10 +1,10 @@
 import TypedAgent from '../core/agent/typed-agent';
 
 import ComposedBehavior from '../core/behavior/composed-behavior';
-import MoveBehavior from '../core/behavior/move-behavior';
-import PeriodicBehavior from '../core/behavior/periodic-behavior';
-import GeneratorBehavior from'../core/behavior/generator-behavior';
-import TransientBehavior from'../core/behavior/transient-behavior';
+import MoveBehavior from '../utils/behavior/move-behavior';
+import PeriodicBehavior from '../utils/behavior/periodic-behavior';
+import GeneratorBehavior from'../utils/behavior/generator-behavior';
+import TransientBehavior from'../utils/behavior/transient-behavior';
 
 import Bee from './bee';
 import Hive from './hive';

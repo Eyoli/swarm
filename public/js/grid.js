@@ -1,23 +1,20 @@
 window.onload = function() {
-	var ctx = document.getElementById("myCanvas").getContext("2d");
-    var lastTimestamp = 0;
-    var interval = 100;
-	var start = true;
+	const ctx = document.getElementById("myCanvas").getContext("2d");
 	
-	var context = {
+	const context = {
 		length: 800,
 		width: 800
 	};
-	
-	var agentsMobileMean = 0, behaviorsMobileMean = 0;
-	
-	var state = {
+		
+	const state = {
+		agentsMobileMean: 0,
+		behaviorsMobileMean: 0,
 		agents: []
 	};
 	
-	var socket = io.connect('http://localhost:3000/grid');
+	const socket = io.connect('http://localhost:3000/grid');
 	
-	let ui = new GameUI();
+	const ui = new GameUI();
 	ui.layout('props').at(context.length - 200)
 		.preDraw(ctx => {
 			ctx.fillStyle = "#000000";
@@ -26,8 +23,8 @@ window.onload = function() {
 		.property('behaviors').at(0, 60).withLabel('Behaviors');
 	
 	socket.on('update', function(data) {
-		agentsMobileMean = data.agentsMobileMean;
-		behaviorsMobileMean = data.behaviorsMobileMean;
+		state.agentsMobileMean = data.agentsMobileMean;
+		state.behaviorsMobileMean = data.behaviorsMobileMean;
 		
 		state.cx = context.length * 1.0 / data.length;
 		state.cy = context.width * 1.0 / data.width;
@@ -43,11 +40,11 @@ window.onload = function() {
 		
 		ctx.font = "20px Georgia";
 		ui.layout('props')
-			.property("agents").withValue(agentsMobileMean.toFixed(0)).up()
-			.property("behaviors").withValue(behaviorsMobileMean.toFixed(0));
+			.property("agents").withValue(state.agentsMobileMean.toFixed(0)).up()
+			.property("behaviors").withValue(state.behaviorsMobileMean.toFixed(0));
 		
 		if(state.grid) {
-			let nodeSpan = context.width / state.grid.length;
+			const nodeSpan = context.width / state.grid.length;
 			drawGrid(state.grid, nodeSpan);
 			drawPath(state.path, nodeSpan);
 		}
@@ -79,7 +76,7 @@ window.onload = function() {
 	function drawPolygone(polygone) {
 		ctx.globalAlpha = 1;
 		
-		var shape = polygone.shape;
+		const shape = polygone.shape;
 		
 		ctx.beginPath(); 
 		ctx.moveTo(state.cx * (shape.center.x + shape.summits[0].x), state.cy * (shape.center.y + shape.summits[0].y));

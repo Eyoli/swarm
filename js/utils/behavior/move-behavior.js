@@ -1,5 +1,4 @@
-import Interface from '../interface';
-import Behavior from './behavior';
+import Behavior from '../../core/behavior/behavior';
 
 export default class MoveBehavior extends Behavior {
 	constructor(agent) {

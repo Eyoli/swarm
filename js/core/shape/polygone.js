@@ -1,63 +1,7 @@
 import Shape from './shape';
+import {computeCenter, iTranslate, computeBoundingRect} from '../math'
 
-function computeExtremities(points) {
-	let init = {
-		xMin: points[0].x,
-		xMax: points[0].x,
-		yMin: points[0].y,
-		yMax: points[0].y
-	};
-	
-	return points.reduce((res, point) => {
-		if(res.xMin > point.x) {
-			res.xMin = point.x;
-		}
-		if(res.xMax < point.x) {
-			res.xMax = point.x;
-		}
-		if(res.yMin > point.y) {
-			res.yMin = point.y;
-		}
-		if(res.yMax < point.y) {
-			res.yMax = point.y;
-		}
-		return res;
-	}, init);
-}
-
-function computeCenter(points) {
-	let extremities = computeExtremities(points);
-	return {
-		x: (extremities.xMax + extremities.xMin) / 2,
-		y: (extremities.yMax + extremities.yMin) / 2
-	};
-}
-
-function computeBoundingRect(points) {
-	let extremities = computeExtremities(points);
-	
-	return new Rectangle(
-		{x: extremities.xMin, y: extremities.yMin},
-		extremities.xMax - extremities.xMin,
-		extremities.yMax - extremities.yMin
-	);
-}
-
-function translate(point, translation) {
-	return {
-		x: point.x + translation.x,
-		y: point.y + translation.y
-	};
-}
-
-function iTranslate(point, translation) {
-	return {
-		x: point.x - translation.x,
-		y: point.y - translation.y
-	};
-}
-
-export class Polygone extends Shape {
+export default class Polygone extends Shape {
 	constructor(...summits) {
 		let center = computeCenter(summits);
 		
@@ -88,10 +32,6 @@ export class Polygone extends Shape {
 				p = Pi.y - (m * Pi.x);
 				I.y = m * I.x + p;
 			}
-			//console.log('Pi:', translate(Pi, this.center));
-			//console.log('Pi+1:', translate(PiPlus1, this.center));
-			//console.log('m:', m, 'p:', p);
-			//console.log('I:', translate(I, this.center));
 			
 			if((I.x - Pi.x) * (I.x - PiPlus1.x) < 0 
 				&& (I.y - R.y) * (I.y - test.y) < 0) {
@@ -109,36 +49,3 @@ export class Polygone extends Shape {
 		return this.boundingRect;
 	}
 }
-
-export class Rectangle extends Polygone {
-	constructor({x, y}, length, width) {
-		super(
-			{x: x, y: y}, 
-			{x: x + length, y: y}, 
-			{x: x + length, y: y + width}, 
-			{x: x, y: y + width}
-		);
-	}
-	
-	topLeft() {
-		return this.summits[0];
-	}
-	
-	topRight() {
-		return this.summits[1];
-	}
-	
-	downRight() {
-		return this.summits[2];
-	}
-	
-	downLeft() {
-		return this.summits[3];
-	}
-	
-	boundary() {
-		return this;
-	}
-}
-
-export default {Polygone, Rectangle};

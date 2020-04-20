@@ -1,10 +1,9 @@
-import Interface from '../interface';
-import EngineInterface from './engine-interface';
+import Interface from '../../interface';
 import {PathFinderClient} from './path-finder';
 
-export default class GridEngine {
+export default class WorldGrid {
 	constructor(width, length, nx, ny) {
-		Interface.checkImplements(this, EngineInterface, PathFinderClient);
+		Interface.checkImplements(this, PathFinderClient);
 		
 		this.width = width;
 		this.length = length;
@@ -41,7 +40,18 @@ export default class GridEngine {
 		return node.nx + '/' + node.ny;
 	}
 	
-	updateGrid(shape) {
+	update(world) {
+		this.reset();
+			
+		for(let i = 0; i < world.agents.length; i++) {
+			const shape = world.agents[i].getShape();
+			this.updatePart(shape);
+		}
+		
+		return this.grid;
+	}
+	
+	updatePart(shape) {
 		const rect = shape.boundary();
 		const start = this.getClosestNode({
 			x: shape.center.x + rect.topLeft().x,
@@ -62,37 +72,12 @@ export default class GridEngine {
 		}
 	}
 	
-	run(world) {
-		this.reset();
-		
-		for(let i = 0; i < world.agents.length; i++) {
-			const shape = world.agents[i].getShape();
-			this.updateGrid(shape);
-		}
-	}
-	
 	getNeighbours(node) {
 		const neighbours = [];
 		const nxPlus1 = node.nx + 1;
 		const nxMinus1 = node.nx - 1;
 		const nyPlus1 = node.ny + 1;
 		const nyMinus1 = node.ny - 1;
-		
-		if(nxPlus1 < this.nx && !this.grid[nxPlus1][node.ny]) {
-			neighbours.push({nx: nxPlus1, ny: node.ny});
-		}
-		
-		if(nxMinus1 >= 0 && !this.grid[nxMinus1][node.ny]) {
-			neighbours.push({nx: nxMinus1, ny: node.ny});
-		}
-		
-		if(nyPlus1 < this.ny && !this.grid[node.nx][nyPlus1]) {
-			neighbours.push({nx: node.nx, ny: nyPlus1});
-		}
-		
-		if(nyMinus1 >= 0 && !this.grid[node.nx][nyMinus1]) {
-			neighbours.push({nx: node.nx, ny: nyMinus1});
-		}
 		
 		if(nyPlus1 < this.ny && !this.grid[node.nx][nyPlus1]
 			&& nxPlus1 < this.nx && !this.grid[nxPlus1][nyPlus1]) {
@@ -114,12 +99,27 @@ export default class GridEngine {
 			neighbours.push({nx: nxMinus1, ny: nyMinus1});
 		}
 		
+		if(nxPlus1 < this.nx && !this.grid[nxPlus1][node.ny]) {
+			neighbours.push({nx: nxPlus1, ny: node.ny});
+		}
+		
+		if(nxMinus1 >= 0 && !this.grid[nxMinus1][node.ny]) {
+			neighbours.push({nx: nxMinus1, ny: node.ny});
+		}
+		
+		if(nyPlus1 < this.ny && !this.grid[node.nx][nyPlus1]) {
+			neighbours.push({nx: node.nx, ny: nyPlus1});
+		}
+		
+		if(nyMinus1 >= 0 && !this.grid[node.nx][nyMinus1]) {
+			neighbours.push({nx: node.nx, ny: nyMinus1});
+		}
+
 		return neighbours;
 	}
 	
 	costBetween(node1, node2) {
-		//return this.distanceBetween(node1, node2);
-		return 1;
+		return this.distanceBetween(node1, node2);
 	}
 	
 	distanceBetween(node1, node2) {

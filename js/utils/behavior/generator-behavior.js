@@ -1,4 +1,4 @@
-import Behavior from './behavior';
+import Behavior from '../../core/behavior/behavior';
 
 export default class GeneratorBehavior extends Behavior {
 	constructor(agent, max) {
