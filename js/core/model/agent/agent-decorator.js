@@ -12,6 +12,10 @@ export default class AgentDecorator {
 		this.agent = agent;
 	}
 	
+	act(world) {
+		this.agent.act(world);
+	}
+	
 	react(world, info) {
 		this.agent.react(world, info);
 	}

@@ -9,7 +9,7 @@ window.onload = function() {
 		width: 800
 	};
 	
-	var collisionsMobileMean = 0, agentsMobileMean = 0, behaviorsMobileMean = 0;
+	var collisionsMobileMean = 0, agentsMobileMean = 0;
 	
 	var agents = {
 		flowers: [],
@@ -26,13 +26,11 @@ window.onload = function() {
 			ctx.fillStyle = "#000000";
 		})
 		.property('collisions').at(0, 30).withLabel('Collision tests').up()
-		.property('agents').at(0, 60).withLabel('Agents').up()
-		.property('behaviors').at(0, 90).withLabel('Behaviors');
+		.property('agents').at(0, 60).withLabel('Agents');
 	
 	socket.on('update', function(data) {
 		collisionsMobileMean = data.collisionsMobileMean;
 		agentsMobileMean = data.agentsMobileMean;
-		behaviorsMobileMean = data.behaviorsMobileMean;
 		
 		agents.hives = [];
 		agents.flowers = [];
@@ -76,8 +74,7 @@ window.onload = function() {
 		ctx.font = "20px Georgia";
 		ui.layout('props')
 			.property("collisions").withValue(collisionsMobileMean.toFixed(0)).up()
-			.property("agents").withValue(agentsMobileMean.toFixed(0)).up()
-			.property("behaviors").withValue(behaviorsMobileMean.toFixed(0));
+			.property("agents").withValue(agentsMobileMean.toFixed(0));
 				
 		agents.hives.forEach(a => drawHive(a));
 		agents.flowers.forEach(a => drawFlower(a));
@@ -89,44 +86,28 @@ window.onload = function() {
 		window.requestAnimationFrame(draw);
 	}
 	
-	function drawBee(bee) {
-		var shape = bee.shape;
-		
+	function drawBee(bee) {		
 		ctx.fillStyle = "#ff0000";
 		ctx.globalAlpha = 1;
-		ctx.beginPath();
-		ctx.arc(shape.center.x, shape.center.y, shape.radius, 0, 2 * Math.PI);
-		ctx.fill();
+		Drawer.drawCircle(ctx, bee.shape);
 	}
 	
-	function drawPheromon(pheromon) {
-		var shape = pheromon.shape;
-		
+	function drawPheromon(pheromon) {		
 		ctx.fillStyle = "#00ff00";
 		ctx.globalAlpha = 0.2;
-		ctx.beginPath();
-		ctx.arc(shape.center.x, shape.center.y, shape.radius, 0, 2 * Math.PI);
-		ctx.fill();
+		Drawer.drawCircle(ctx, pheromon.shape);
 	}
 	
-	function drawHive(hive) {
-		var shape = hive.shape;
-		
+	function drawHive(hive) {		
 		ctx.fillStyle = "#0000ff";
 		ctx.globalAlpha = 1;
-		ctx.beginPath();
-		ctx.arc(shape.center.x, shape.center.y, shape.radius, 0, 2 * Math.PI);
-		ctx.fill();
+		Drawer.drawCircle(ctx, hive.shape);
 	}
 	
-	function drawFlower(flower) {
-		var shape = flower.shape;
-		
+	function drawFlower(flower) {		
 		ctx.fillStyle = "#000000";
 		ctx.globalAlpha = 1;
-		ctx.beginPath();
-		ctx.arc(shape.center.x, shape.center.y, shape.radius, 0, 2 * Math.PI);
-		ctx.fill();
+		Drawer.drawCircle(ctx, flower.shape);
 	}
     
     window.requestAnimationFrame(draw);

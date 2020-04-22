@@ -1,16 +1,16 @@
 import Behavior from '../../core/model/behavior/behavior';
 
 export default class TransientBehavior extends Behavior {
-	constructor(agent, expirationTime) {
-		super(agent);
+	constructor(expirationTime) {
+		super();
 		
 		this.expirationTime = expirationTime;
 		this.time = 0;
 	}
 	
-	apply(world) {
+	apply(agent, world) {
 		if(this.time > this.expirationTime) {
-			this.agent.destroy();
+			agent.destroy();
 		}
 		
 		this.time++;

@@ -80,6 +80,7 @@ export class PathFinder {
 				state = getNodeState(client.getNodeKey(state.previous), nodesState);
 			}
 		}
+		shortestPath.pop();
 		
 		return shortestPath;
 	}

@@ -1,5 +1,5 @@
 import Interface from '../../interface';
 
-const BehaviorInterface = new Interface('BehaviorInterface', 'apply', 'isDestroyed');
+const BehaviorInterface = new Interface('BehaviorInterface', 'apply');
 
 export default BehaviorInterface;

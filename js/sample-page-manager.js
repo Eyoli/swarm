@@ -26,6 +26,12 @@ export default class SamplePageManager {
 			params.clients++;
 			params.worldManager.togglePause(false);
 			
+			socket.emit('init', params.worldManager.getInfo());
+			
+			socket.on('click', event => {
+				params.worldManager.handleClientMouseClick(event);
+			});
+			
 			socket.on('disconnect', (reason) => {
 				params.clients--;
 				if(params.clients <= 0) {
@@ -39,6 +45,8 @@ export default class SamplePageManager {
 			params.worldManager.advance();
 			params.io.volatile.emit('update', params.worldManager.getState());
 		}, UPDATE_INTERVAL);
+		
+		return params;
 	}
 	
 	list() {

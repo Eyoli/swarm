@@ -1,4 +1,4 @@
-import AgentDecorator from './agent-decorator';
+import AgentDecorator from '../../core/model/agent/agent-decorator';
 
 export default class TypedAgent extends AgentDecorator {
 	constructor(agent, type) {

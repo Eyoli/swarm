@@ -4,7 +4,6 @@ export default class World {
 		this.agents = [];
 		this.engines = {};
 		this.services = {};
-		this.behaviors = [];
 		
 		this.maxAgents = maxAgents;
 		this.step = 0;
@@ -34,16 +33,8 @@ export default class World {
 		return null;
 	}
 	
-	addAgentWithBehavior(agent, behavior) {
-		if(this.addAgent(agent)) {
-			this.addBehavior(behavior);
-			return agent;
-		}
-		return null;
-	}
-	
-	addBehavior(behavior) {
-		this.behaviors.push(behavior);
+	broadcast(event) {
+		this.agents.forEach(agent => agent.react(this, event));
 	}
 	
 	advance() {		
@@ -52,10 +43,8 @@ export default class World {
 			this.engines[name].run(this);
 		}
 		
-		// Run behaviors
-		for(let i = 0; i < this.behaviors.length; i++) {
-			this.behaviors[i].apply(this);
-		}
+		// make agents act
+		this.agents.forEach(agent => agent.act(this));
 		
 		this.step++;
 	}

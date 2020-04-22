@@ -39,7 +39,6 @@ export default class HiveWorld {
 					
 		this.collisionsMobileMean = new MobileMeanExtractor(this.collisionEngine, e => e.collisionFinder.getLastComputations(), 20);
 		this.agentsMobileMean = new MobileMeanExtractor(this.world, w => w.agents.length, 20);
-		this.behaviorsMobileMean = new MobileMeanExtractor(this.world, w => w.behaviors.length, 20);
 	}
 	
 	advance() {
@@ -52,12 +51,16 @@ export default class HiveWorld {
 		this.pause = pause;
 	}
 	
+	getInfo() {
+		return {
+		};
+	}
+	
 	getState() {
 		return {
 			agents: this.world.agents.map(mapAgentToClient),
 			collisionsMobileMean: this.collisionsMobileMean.update(),
 			agentsMobileMean: this.agentsMobileMean.update(),
-			behaviorsMobileMean: this.behaviorsMobileMean.update(),
 			length: this.length,
 			width: this.width
 			

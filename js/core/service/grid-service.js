@@ -8,10 +8,12 @@ export default class GridService {
 	
 	getShortestPath(world, start, end) {
 		this.worldGrid.update(world);
-		return this.pathFinder.getShortestPath(this.worldGrid, start, end);
+		return this.pathFinder.getShortestPath(this.worldGrid, start, end)
+			.map(node => this.worldGrid.getPosition(node));
 	}
 	
 	getGrid(world) {
-		return this.worldGrid.update(world);
+		this.worldGrid.update(world);
+		return this.worldGrid;
 	}
 }

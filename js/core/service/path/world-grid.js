@@ -1,6 +1,12 @@
 import Interface from '../../interface';
 import {PathFinderClient} from './path-finder';
 
+function distanceN2(node1, node2) {
+	let dx = (node2.nx - node1.nx);
+	let dy = (node2.ny - node1.ny);
+	return Math.sqrt(dx * dx + dy * dy);
+}
+
 export default class WorldGrid {
 	constructor(width, length, nx, ny) {
 		Interface.checkImplements(this, PathFinderClient);
@@ -31,8 +37,15 @@ export default class WorldGrid {
 	
 	getClosestNode({x, y}) {
 		return {
-			nx: Math.floor(x * this.nx / this.width),
-			ny: Math.floor(y * this.ny / this.length)
+			nx: Math.max(0, Math.floor(x * this.nx / this.width)),
+			ny: Math.max(0, Math.floor(y * this.ny / this.length))
+		};
+	}
+	
+	getPosition(node) {
+		return {
+			x: (this.dx / 2) + node.nx * this.dx,
+			y: (this.dy / 2) + node.ny * this.dy
 		};
 	}
 	
@@ -47,8 +60,6 @@ export default class WorldGrid {
 			const shape = world.agents[i].getShape();
 			this.updatePart(shape);
 		}
-		
-		return this.grid;
 	}
 	
 	updatePart(shape) {
@@ -119,12 +130,10 @@ export default class WorldGrid {
 	}
 	
 	costBetween(node1, node2) {
-		return this.distanceBetween(node1, node2);
+		return distanceN2(node1, node2);
 	}
 	
 	distanceBetween(node1, node2) {
-		let dx = (node2.nx - node1.nx);
-		let dy = (node2.ny - node1.ny);
-		return Math.sqrt(dx * dx + dy * dy);
+		return 0.5 * distanceN2(node1, node2);
 	}
 }

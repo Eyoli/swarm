@@ -1,8 +1,8 @@
 import Behavior from '../../core/model/behavior/behavior';
 
 export default class GeneratorBehavior extends Behavior {
-	constructor(agent, max) {
-		super(agent);
+	constructor(max) {
+		super();
 		
 		if (this.constructor === GeneratorBehavior) {
 			throw new TypeError('Abstract class cannot be instantiated directly');
@@ -12,22 +12,22 @@ export default class GeneratorBehavior extends Behavior {
 		this.generatedAgents = [];
 	}
 	
-	apply(world) {
+	apply(agent, world) {
 		this.generatedAgents = this.generatedAgents.filter(a => !a.isDestroyed());
 		
 		if(this.max) {
 			if(this.generatedAgents.length < this.max) {
-				var generatedAgent = this.generate(world);
+				var generatedAgent = this.generate(agent, world);
 				if(generatedAgent) {
 					this.generatedAgents.push(generatedAgent);
 				}
 			}
 		} else {
-			this.generate(world);
+			this.generate(agent, world);
 		}
 	}
 	
-	generate(world) {
+	generate(agent, world) {
 		throw new Error('You must implement this function');
 	}
 }

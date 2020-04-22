@@ -13,13 +13,9 @@ export default class ComposedBehavior {
 		return this;
 	}
 	
-	apply(world) {
+	apply(agent, world) {
 		for(var i = 0; i < this.behaviors.length; i++) {
-			this.behaviors[i].apply(world);
+			this.behaviors[i].apply(agent, world);
 		}
-	}
-	
-	isDestroyed() {
-		return this.behaviors.every(b => b.isDestroyed());
 	}
 }

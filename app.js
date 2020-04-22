@@ -19,16 +19,16 @@ server.listen(3000, function () {
 });
 
 // Chargement de socket.io
-var io = socketIo.listen(server);
+const io = socketIo.listen(server);
 
-var samplePageManager = new SamplePageManager(app, io);
+const samplePageManager = new SamplePageManager(app, io);
 
 // Hive world settings
-var hiveWorld = new HiveWorld(WORLD_WIDTH, WORLD_LENGTH);
+const hiveWorld = new HiveWorld(WORLD_WIDTH, WORLD_LENGTH);
 samplePageManager.addSample('hive', 'hive.ejs', hiveWorld);
 
 // RPG world settings
-var rpgWorld = new RPGWorld(10, 10);
+const rpgWorld = new RPGWorld(100, 100);
 samplePageManager.addSample('grid', 'grid.ejs', rpgWorld);
 
 app.get('/', function (req, res) {

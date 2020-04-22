@@ -1,5 +1,6 @@
 window.onload = function() {
-	const ctx = document.getElementById("myCanvas").getContext("2d");
+	const canvas = document.getElementById("myCanvas");
+	const ctx = canvas.getContext("2d");
 	
 	const context = {
 		length: 800,
@@ -8,7 +9,6 @@ window.onload = function() {
 		
 	const state = {
 		agentsMobileMean: 0,
-		behaviorsMobileMean: 0,
 		agents: []
 	};
 	
@@ -21,18 +21,21 @@ window.onload = function() {
 		})
 		.property('agents').at(0, 30).withLabel('Agents').up()
 		.property('behaviors').at(0, 60).withLabel('Behaviors');
+		
+	socket.on('init', function(data) {
+		if(state.sx && state.sy) {
+			ctx.scale(1 / state.sx, 1 / state.sy);
+		}
+		state.sx = context.length * 1.0 / data.length;
+		state.sy = context.width * 1.0 / data.width;
+		ctx.scale(state.sx, state.sy);
+	});
 	
 	socket.on('update', function(data) {
-		state.agentsMobileMean = data.agentsMobileMean;
-		state.behaviorsMobileMean = data.behaviorsMobileMean;
-		
-		state.cx = context.length * 1.0 / data.length;
-		state.cy = context.width * 1.0 / data.width;
-			
+		state.agentsMobileMean = data.agentsMobileMean;			
 		state.agents = data.agents || [];
 		state.grid = data.grid;
-		state.path = data.path;
-    })
+    });
     
 	function draw(timestamp) {
 					        
@@ -40,16 +43,24 @@ window.onload = function() {
 		
 		ctx.font = "20px Georgia";
 		ui.layout('props')
-			.property("agents").withValue(state.agentsMobileMean.toFixed(0)).up()
-			.property("behaviors").withValue(state.behaviorsMobileMean.toFixed(0));
+			.property("agents").withValue(state.agentsMobileMean.toFixed(0));
 		
 		if(state.grid) {
-			const nodeSpan = context.width / state.grid.length;
-			drawGrid(state.grid, nodeSpan);
-			drawPath(state.path, nodeSpan);
+			//drawGrid(state.grid.grid, state.grid.dx);
+			//drawPath(state.path, nodeSpan);
 		}
 		
-		state.agents.forEach(a => drawPolygone(a));
+		state.agents.forEach(a => {
+			if(a.info.type === 'dupe') {
+				ctx.fillStyle = "#0000ff";
+				ctx.globalAlpha = 1;
+				Drawer.drawCircle(ctx, a.shape);
+			} else {
+				ctx.globalAlpha = 1;
+				ctx.lineWidth = 1 / state.sx;
+				Drawer.drawPolygone(ctx, a.shape);
+			}
+		});
 		
 		ui.draw(ctx);
 		
@@ -73,19 +84,18 @@ window.onload = function() {
 		ctx.fill();
 	}
 	
-	function drawPolygone(polygone) {
-		ctx.globalAlpha = 1;
-		
-		const shape = polygone.shape;
-		
-		ctx.beginPath(); 
-		ctx.moveTo(state.cx * (shape.center.x + shape.summits[0].x), state.cy * (shape.center.y + shape.summits[0].y));
-		shape.summits.forEach(summit => {
-			ctx.lineTo(state.cx * (shape.center.x + summit.x), state.cy * (shape.center.y + summit.y));
+	function onClick(e) {
+		const target = e.target;
+		const canvasPosition = target.getBoundingClientRect();
+		const inputX = e.pageX - canvasPosition.left;
+		const inputY = e.pageY - canvasPosition.top;
+		socket.emit('click', {
+			x: inputX / state.sx,
+			y: inputY / state.sy
 		});
-		ctx.lineTo(state.cx * (shape.center.x + shape.summits[0].x), state.cx * (shape.center.y + shape.summits[0].y));
-		ctx.stroke();
 	}
+	
+	canvas.addEventListener("click", onClick, false);
     
     window.requestAnimationFrame(draw);
 };

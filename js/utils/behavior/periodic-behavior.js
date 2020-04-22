@@ -10,9 +10,9 @@ export default class PeriodicBehavior {
 		this.lastCall = 0;
 	}
 	
-	apply(world) {		
+	apply(agent, world) {		
 		if(world.step - this.lastCall >= this.period) {
-			this.behavior.apply(world);
+			this.behavior.apply(agent, world);
 			this.lastCall = world.step;
 		}
 	}
