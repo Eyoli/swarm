@@ -17,6 +17,10 @@ export default class Interface {
       this.methods.push(method)
     }
   }
+  
+  checkImplements(object) {
+	  Interface.checkImplements(object, this);
+  }
  
   static checkImplements(object, ...interfaces) {
     if (!Array.isArray(interfaces) || interfaces.length === 0) {

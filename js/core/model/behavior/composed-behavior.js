@@ -1,9 +1,8 @@
-import Interface from '../../interface';
 import BehaviorInterface from './behavior-interface'
 
 export default class ComposedBehavior {
 	constructor(...behaviors) {
-		Interface.checkImplements(this, BehaviorInterface);
+		BehaviorInterface.checkImplements(this);
 		
 		this.behaviors = behaviors || [];
 	}

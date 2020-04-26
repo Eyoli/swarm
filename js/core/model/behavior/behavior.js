@@ -1,9 +1,8 @@
-import Interface from '../../interface';
 import BehaviorInterface from './behavior-interface';
 
 export default class Behavior {
 	constructor() {
-		Interface.checkImplements(this, BehaviorInterface);
+		BehaviorInterface.checkImplements(this);
 		
 		if (this.constructor === Behavior) {
 			throw new TypeError('Abstract class cannot be instantiated directly');

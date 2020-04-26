@@ -1,11 +1,19 @@
 import Behavior from '../../core/model/behavior/behavior';
 
 export default class MoveBehavior extends Behavior {
-	constructor() {
+	constructor(trajectory) {
 		super();
+		
+		this.trajectory = trajectory;
+	}
+	
+	setTrajectory(trajectory) {
+		this.trajectory = trajectory;
 	}
 	
 	apply(agent, world) {
-		agent.getShape().center = agent.getPhysics().move(agent.getShape().center);
+		if(this.trajectory) {
+			agent.getShape().center = this.trajectory.getNextPosition();
+		}
 	}
 }

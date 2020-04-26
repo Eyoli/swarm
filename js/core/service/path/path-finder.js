@@ -1,6 +1,6 @@
 import Interface from '../../interface';
 
-export const PathFinderClient = new Interface('PathFinderClient', 'getClosestNode', 'getNeighbours', 'getNodeKey', 'costBetween', 'distanceBetween');
+export const PathProvider = new Interface('PathProvider', 'getClosestNode', 'getNeighbours', 'getNodeKey', 'costBetween', 'distanceBetween');
 
 function getNodeState(key, nodesState) {
 	if(!nodesState[key]) {
@@ -76,11 +76,10 @@ export class PathFinder {
 			shortestPath.push(currentNode);
 			let state = getNodeState(client.getNodeKey(currentNode), nodesState);
 			while(state.previous) {
-				shortestPath.push(state.previous);
+				shortestPath.unshift(state.previous);
 				state = getNodeState(client.getNodeKey(state.previous), nodesState);
 			}
 		}
-		shortestPath.pop();
 		
 		return shortestPath;
 	}

@@ -1,5 +1,4 @@
-import Interface from '../../interface';
-import {PathFinderClient} from './path-finder';
+import {PathProvider} from './path-finder';
 
 function distanceN2(node1, node2) {
 	let dx = (node2.nx - node1.nx);
@@ -9,7 +8,7 @@ function distanceN2(node1, node2) {
 
 export default class WorldGrid {
 	constructor(width, length, nx, ny) {
-		Interface.checkImplements(this, PathFinderClient);
+		PathProvider.checkImplements(this);
 		
 		this.width = width;
 		this.length = length;
@@ -55,11 +54,10 @@ export default class WorldGrid {
 	
 	update(world) {
 		this.reset();
-			
-		for(let i = 0; i < world.agents.length; i++) {
-			const shape = world.agents[i].getShape();
-			this.updatePart(shape);
-		}
+		
+		world.agents().forEach(agent => {
+			this.updatePart(agent.getShape());
+		}, this);
 	}
 	
 	updatePart(shape) {

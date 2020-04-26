@@ -1,15 +1,15 @@
 export default class Physics {
-	constructor(speed, acc) {
+	constructor({amp, angle, max, acc} = {}) {
 		
 		if (this.constructor === Physics) {
 			throw new TypeError('Abstract class cannot be instantiated directly');
 		}
 		
-		this.speed = speed;
+		this.speed = {
+			amp: amp,
+			angle: angle,
+			max: max
+		};
 		this.acc = acc;
-	}
-	
-	move(center) {
-		throw new Error('You must implement this function');
 	}
 }

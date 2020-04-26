@@ -1,9 +1,8 @@
-import Interface from '../../interface';
 import AgentInterface from './agent-interface.js';
 
 export default class Agent {
 	constructor(shape, physics, behavior) {
-		Interface.checkImplements(this, AgentInterface);
+		AgentInterface.checkImplements(this);
 		
 		if (this.constructor === Agent) {
 			throw new TypeError('Abstract class cannot be instantiated directly');

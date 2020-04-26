@@ -1,8 +1,8 @@
 import Physics from './physics';
 
 export default class BasicPhysics extends Physics {
-	constructor(speed, acc) {
-		super(speed, acc);
+	constructor(config) {
+		super(config);
 	}
 	
 	move(center) {

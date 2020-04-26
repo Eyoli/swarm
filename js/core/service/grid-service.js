@@ -8,12 +8,22 @@ export default class GridService {
 	
 	getShortestPath(world, start, end) {
 		this.worldGrid.update(world);
-		return this.pathFinder.getShortestPath(this.worldGrid, start, end)
-			.map(node => this.worldGrid.getPosition(node));
+		const shortestPath = this.pathFinder.getShortestPath(this.worldGrid, start, end)
+			.map(node => this.worldGrid.getPosition(node));;
+		
+		if(shortestPath.length > 0) {
+			// Skip the first/last nodes which are not really useful
+			//shortestPath.pop();
+			//shortestPath.shift();
+			
+			// Add the real end to the path
+			shortestPath.push(end);
+		}
+		
+		return shortestPath;
 	}
 	
 	getGrid(world) {
-		this.worldGrid.update(world);
 		return this.worldGrid;
 	}
 }

@@ -1,10 +1,9 @@
-import Interface from '../../interface';
 import CollisionResolver from './collision-resolver';
 import {computeDistanceInfo} from '../../math';
 
 export default class CircleCollisionResolver {
 	constructor() {
-		Interface.checkImplements(this, CollisionResolver);
+		CollisionResolver.checkImplements(this);
 	}
 	
 	resolve(shape1, shape2) {

@@ -68,3 +68,48 @@ export const iTranslate = function(point, translation) {
 		y: point.y - translation.y
 	};
 }
+
+/**
+* k: Index of knot interval that contains x.
+* x: Position.
+* t: Array of knot positions, needs to be padded : [0,1,2] for p=2 => [0,0,0,1,2,2,2]
+* c: Array of control points
+* p: Degree of B-spline.
+*/
+export const deBoorAlgorithm = function(x, k, t, c, p) {
+    const d = c.slice(k - p, k + 1);
+		
+    for(let r = 1; r < p+1; r++) {
+        for(let j = p; j > r-1; j--) {
+			const alpha = (x - t[j+k-p]) / (t[j+1+k-r] - t[j+k-p]);
+            if(alpha) {
+				d[j] = (1.0 - alpha) * d[j-1] + alpha * d[j];
+			} else {
+				d[j] = d[j-1];
+			}
+		}
+	}
+			
+    return d[p];
+}
+
+/**
+* k: Index of interval that contains x.
+* x: Parameter
+* t: Array of stop points, needs to be padded : [0,0.5,1] for p=2 => [0,0,0,0.5,1,1,1]
+* c=(c1, c2): Array of control points
+* p: Degree of B-spline.
+*/
+export const deBoorAlgorithm2D = function(x, k, t, c1, c2, p) {
+    const d = c.slice(k - p, k + 1);
+
+    for(let r = 1; r < p+1; r++) {
+        for(let j = p; j > r-1; j--) {
+            const alpha = (x - t[j+k-p]) / (t[j+1+k-r] - t[j+k-p]);
+            d[j][0] = (1.0 - alpha) * d[j-1][0] + alpha * d[j][0];
+			d[j][1] = (1.0 - alpha) * d[j-1][1] + alpha * d[j][1];
+		}
+	}
+	
+    return d[p];
+}

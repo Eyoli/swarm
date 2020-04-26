@@ -1,11 +1,10 @@
 export default class World {
-	constructor(maxAgents) {
+	constructor(agentHolder) {
 		
-		this.agents = [];
+		this.agentHolder = agentHolder;
 		this.engines = {};
 		this.services = {};
 		
-		this.maxAgents = maxAgents;
 		this.step = 0;
 		
 		this.mouse = {};
@@ -21,20 +20,20 @@ export default class World {
 		return this;
 	}
 	
+	agents(group) {
+		return this.agentHolder.get(group);
+	}
+	
 	getService(name) {
 		return this.services[name];
 	}
 	
-	addAgent(agent) {
-		if(this.agents.length < this.maxAgents) {
-			this.agents.push(agent);
-			return agent;
-		}
-		return null;
+	addAgent(agent, group) {
+		return this.agentHolder.add(agent, group);
 	}
 	
-	broadcast(event) {
-		this.agents.forEach(agent => agent.react(this, event));
+	broadcast(event, group) {
+		this.agentHolder.get(group).forEach(agent => agent.react(this, event));
 	}
 	
 	advance() {		
@@ -44,7 +43,7 @@ export default class World {
 		}
 		
 		// make agents act
-		this.agents.forEach(agent => agent.act(this));
+		this.agentHolder.get().forEach(agent => agent.act(this));
 		
 		this.step++;
 	}

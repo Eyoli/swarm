@@ -10,6 +10,8 @@ import ComposedBehavior from '../core/model/behavior/composed-behavior';
 import PeriodicBehavior from '../utils/behavior/periodic-behavior';
 import FuzzyMoveBehavior from '../utils/behavior/fuzzy-move-behavior';
 
+import LineTrajectory from '../core/model/trajectory/line-trajectory';
+
 import {generatePheromon} from './hive-agent-factory';
 
 class ReleasePheromonBehavior extends GeneratorBehavior {
@@ -18,12 +20,12 @@ class ReleasePheromonBehavior extends GeneratorBehavior {
 	}
 	
 	generate(agent, world) {
-		var agentPosition = {
+		const agentPosition = {
 			x: agent.getShape().center.x,
 			y: agent.getShape().center.y
 		};
-		var agentSourceAngle = agent.getPhysics().speed.angle + Math.PI;
-		var type = agent.searchingFlower ? "TOWARD_HIVE" : "TOWARD_FLOWER";
+		const agentSourceAngle = agent.getPhysics().speed.angle + Math.PI;
+		const type = agent.searchingFlower ? "TOWARD_HIVE" : "TOWARD_FLOWER";
 		
 		return generatePheromon(world, agentPosition, agentSourceAngle, type);
 	}
@@ -31,23 +33,31 @@ class ReleasePheromonBehavior extends GeneratorBehavior {
 
 export default class Bee extends Agent {
 	constructor(position, angle) {
-		var speed = {amp: 0, angle: angle, max: 10};
+		const config = {
+			amp: 0, 
+			angle: angle, 
+			max: 10, 
+			acc: 0.1
+		};
 		
-		var fuzziness = {
+		const fuzziness = {
 			amp: 3,
 			period: 25
 		};
 		
+		const trajectory = new LineTrajectory(position, config);
+		
 		super(
 			new Circle(position, 10), 
-			new BasicPhysics(speed, 0.1),
+			new BasicPhysics(config),
 			new ComposedBehavior(
-				new FuzzyMoveBehavior(fuzziness),
+				new FuzzyMoveBehavior(trajectory, fuzziness),
 				new PeriodicBehavior(
 					new ReleasePheromonBehavior(), 30))
 		);
 		
 		this.searchingFlower = true;
+		this.trajectory = trajectory;
 	}
 	
 	react(world, info) {
@@ -56,9 +66,9 @@ export default class Bee extends Agent {
 		} else if(info.type === "HIVE") {
 			this.searchingFlower = true;
 		} else if(info.type === "TOWARD_FLOWER" && this.searchingFlower) {
-			this.physics.speed.angle = info.sourceAngle;
+			this.trajectory.speed.angle = info.sourceAngle;
 		} else if(info.type === "TOWARD_HIVE" && !this.searchingFlower) {
-			this.physics.speed.angle = info.sourceAngle;
+			this.trajectory.speed.angle = info.sourceAngle;
 		}
 	}
 	

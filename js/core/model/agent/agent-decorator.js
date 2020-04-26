@@ -1,9 +1,8 @@
-import Interface from '../../interface';
 import AgentInterface from './agent-interface';
 
 export default class AgentDecorator {
 	constructor(agent) {
-		Interface.checkImplements(this, AgentInterface);
+		AgentInterface.checkImplements(this);
 		
 		if (this.constructor === AgentDecorator) {
 			throw new TypeError('Abstract class cannot be instantiated directly');

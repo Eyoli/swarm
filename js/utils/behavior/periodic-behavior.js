@@ -1,9 +1,8 @@
-import Interface from '../../core/interface';
 import BehaviorInterface from '../../core/model/behavior/behavior-interface';
 
 export default class PeriodicBehavior {
 	constructor(behavior, period) {
-		Interface.checkImplements(this, BehaviorInterface);
+		BehaviorInterface.checkImplements(this);
 		
 		this.period = period;
 		this.behavior = behavior;

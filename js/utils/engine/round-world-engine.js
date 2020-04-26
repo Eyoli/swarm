@@ -10,8 +10,8 @@ export default class RoundWorldEngine {
 	}
 	
 	run(world) {
-		for(var i = 0; i < world.agents.length; i++) {
-			var center = world.agents[i].getShape().center;
+		world.agents().forEach(agent => {
+			var center = agent.getShape().center;
 			if(center.x < 0) {
 				center.x = this.width;
 			} else if(center.x > this.width) {
@@ -21,6 +21,6 @@ export default class RoundWorldEngine {
 			} else if(center.y > this.height) {
 				center.y = 0;
 			}
-		}
+		});
 	}
 }

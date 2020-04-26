@@ -3,10 +3,10 @@ import BehaviorInterface from '../../core/model/behavior/behavior-interface'
 import MoveBehavior from './move-behavior';
 
 export default class FuzzyMoveBehavior {
-	constructor(fuzziness) {
+	constructor(trajectory, fuzziness) {
 		Interface.checkImplements(this, BehaviorInterface);
 		
-		this.moveBehavior = new MoveBehavior();
+		this.moveBehavior = new MoveBehavior(trajectory);
 		
 		this.fuzziness = fuzziness;
 		this.t = 0;

@@ -1,5 +1,5 @@
 import World from './core/model/world';
-import ClearEngine from './core/model/engine/clear-engine';
+import AgentHolder from './core/model/agent/agent-holder';
 import WorldGrid from './core/service/path/world-grid';
 import GridService from './core/service/grid-service';
 import MobileMeanExtractor from './core/statistics/mobile-mean-extractor';
@@ -12,7 +12,7 @@ import Behavior from './core/model/behavior/behavior';
 import Circle from './core/model/shape/circle';
 import TypedAgent from './utils/agent/typed-agent';
 import MoveBehavior from './utils/behavior/move-behavior';
-import {computeDistanceInfo} from './core/math';
+import BSplineTrajectory from './core/model/trajectory/b-spline-trajectory';
 
 class Wall extends Agent {
 	constructor(polygone) {
@@ -30,21 +30,33 @@ class Wall extends Agent {
 
 class Dupe extends Agent {
 	constructor(position) {
-		const speed = {amp: 1, angle: 0, max: 0.1};
-		const followTargetBehavior = new FollowTargetBehavior();
+		const config = {amp: 1, angle: 0, max: 0.1};
+		const moveBehavior = new MoveBehavior();
 		
 		super(
 			new Circle(position, 1), 
-			new BasicPhysics(speed, 0),
-			followTargetBehavior
+			new BasicPhysics(config),
+			moveBehavior
 		);
 		
-		this.followTargetBehavior = followTargetBehavior;
+		this.moveBehavior = moveBehavior;
 	}
 	
 	react(world, info) {
 		if(info.target) {
-			this.followTargetBehavior.setTarget(info.target);
+			const pathToTarget = world.getService('grid').getShortestPath(world, this.getShape().center, info.target.getShape().center);
+			this.target = info.target;
+			
+			let newTrajectory = null;
+			const p = 2;
+			if(pathToTarget.length > p) {
+				newTrajectory = new BSplineTrajectory(this.getShape().center, {
+						control: pathToTarget, 
+						p: p, 
+						amp: 1,
+						sampling: 2});
+			}
+			this.moveBehavior.setTrajectory(newTrajectory);
 		}
 	}
 	
@@ -72,48 +84,6 @@ class Target extends Agent {
 	}
 }
 
-class FollowTargetBehavior extends Behavior {
-	constructor() {
-		super();
-		
-		this.pathToTarget = null;
-		this.moveBehavior = new MoveBehavior();
-	}
-	
-	setTarget(target) {
-		this.target = target;
-		this.nextNode = null;
-		this.pathToTarget = null;
-		
-	}
-	
-	apply(agent, world) {
-		const center = agent.getShape().center;
-		const speed = agent.getPhysics().speed;
-		
-		if(this.target && !this.pathToTarget) {
-			this.pathToTarget = world.getService('grid').getShortestPath(world, center, this.target.getShape().center);
-			this.nextNode = this.pathToTarget.pop();
-		}
-		
-		if(this.nextNode) {
-			const distanceInfo = computeDistanceInfo(center, this.nextNode);
-			const d = Math.sqrt(distanceInfo.std);
-
-			if(d < speed.amp) {
-				this.nextNode = this.pathToTarget.pop();
-			} else {
-				if(distanceInfo.dy > 0) {
-					speed.angle = Math.acos(distanceInfo.dx / d);
-				} else {
-					speed.angle = -Math.acos(distanceInfo.dx / d);
-				}
-				this.moveBehavior.apply(agent, world);
-			}
-		}
-	}
-}
-
 function mapAgentToClient(agent) {
 	return {
 		info: agent.interact(),
@@ -128,10 +98,9 @@ export default class RPGWorld {
 		this.width = width;
 		this.pause = true;
 		
-		const gridService = new GridService(new WorldGrid(width, length, 10, 10));
+		const gridService = new GridService(new WorldGrid(width, length, 25, 25));
 
-		this.world = new World(100)
-					.withEngine('clear', new ClearEngine())
+		this.world = new World(new AgentHolder(100).withGroup('selectable'))
 					.withService('grid', gridService);
 		
 		const p = new Polygone(
@@ -144,7 +113,7 @@ export default class RPGWorld {
 		const d = new TypedAgent(new Dupe({x:5,y:5}), 'dupe');
 		this.world.addAgent(d);
 		
-		this.agentsMobileMean = new MobileMeanExtractor(this.world, w => w.agents.length, 20);
+		this.agentsMobileMean = new MobileMeanExtractor(this.world, w => w.agents().length, 20);
 	}
 	
 	handleClientMouseClick(event) {
@@ -171,7 +140,7 @@ export default class RPGWorld {
 	
 	getState() {
 		return {
-			agents: this.world.agents.map(mapAgentToClient),
+			agents: this.world.agents().map(mapAgentToClient),
 			agentsMobileMean: this.agentsMobileMean.update(),
 			grid: this.world.getService('grid').getGrid(this.world)
 			
