@@ -24,7 +24,7 @@ export default class AgentHolder {
 	
 	get(group) {
 		if(group) {
-			this.groups[group].push(agent);
+			return this.groups[group];
 		}
 		return this.agents;
 	}

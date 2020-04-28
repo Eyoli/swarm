@@ -1,17 +1,30 @@
 const Drawer = {
-	drawCircle: (ctx, circle) => {
+	drawCircle: (ctx, {center, radius}) => {
 		ctx.beginPath();
-		ctx.arc(circle.center.x, circle.center.y, circle.radius, 0, 2 * Math.PI);
+		ctx.arc(center.x, center.y, radius, 0, 2 * Math.PI);
 		ctx.fill();
 	},
 	
-	drawPolygone: (ctx, polygone) => {
+	drawPolygone: (ctx, {center, summits}) => {
 		ctx.beginPath(); 
-		ctx.moveTo(polygone.center.x + polygone.summits[0].x, polygone.center.y + polygone.summits[0].y);
-		polygone.summits.forEach(summit => {
-			ctx.lineTo(polygone.center.x + summit.x, polygone.center.y + summit.y);
+		ctx.moveTo(center.x + summits[0].x, center.y + summits[0].y);
+		summits.forEach(summit => {
+			ctx.lineTo(center.x + summit.x, center.y + summit.y);
 		});
-		ctx.lineTo(polygone.center.x + polygone.summits[0].x, polygone.center.y + polygone.summits[0].y);
+		ctx.lineTo(center.x + summits[0].x, center.y + summits[0].y);
+		ctx.stroke();
+	},
+	
+	drawCurvedPolygone: (ctx, {center, summits}) => {
+		const points = [];
+		summits.forEach(s => {
+			points.push(center.x + s.x);
+			points.push(center.y + s.y);
+		});
+			
+		ctx.beginPath();
+		ctx.moveTo(points[0], points[1]);
+		ctx.curve(points, 0.5, 20, true);
 		ctx.stroke();
 	}
 };

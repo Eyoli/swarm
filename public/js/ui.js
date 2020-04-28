@@ -94,3 +94,64 @@ class UIProperty {
 			this.layout.y + this.y);
 	}
 }
+
+class SelectionHandler {
+	constructor(canvas, callback) {
+		this.callback = callback;
+		this.rect = {};
+		
+		canvas.addEventListener("click", this.attachLeftClick(), false);
+		canvas.addEventListener("mousedown", this.attachMouseDown(), false);
+		canvas.addEventListener("mousemove", this.attachMouseMove(), false);
+		canvas.addEventListener("mouseleave", this.attachMouseLeave(), false);
+	}
+	
+	clear() {
+		this.rect.x = null;
+		this.rect.y = null;
+		this.rect.width = null;
+		this.rect.height = null;
+	}
+	
+	attachLeftClick() {
+		const context = this;
+		return e => {
+			if(context.rect.x) {
+				context.callback(context.rect);
+				context.clear();
+			} else {
+				const pos = getCanvasMousePosition(e);
+				context.callback(pos);
+			}
+		};
+	}
+	
+	attachMouseDown() {
+		const context = this;
+		return e => {
+			if(e.button === 0) {
+				const pos = getCanvasMousePosition(e);
+				context.rect.x = pos.x;
+				context.rect.y = pos.y;
+			}
+		};
+	}
+	
+	attachMouseMove() {
+		const context = this;
+		return e => {
+			if(context.rect.x) {
+				const pos = getCanvasMousePosition(e);
+				context.rect.width = pos.x - context.rect.x;
+				context.rect.height = pos.y - context.rect.y;
+			}
+		};
+	}
+	
+	attachMouseLeave() {
+		const context = this;
+		return e => {
+			context.clear();
+		}
+	}
+}

@@ -1,26 +1,23 @@
 const UPDATE_INTERVAL = 1000 / 30;
 
-export default class SamplePageManager {
-	constructor(app, io) {
+class SamplePageBuilder {
+	constructor(app, params) {
 		this.app = app;
-		this.io = io;
-		this.params = [];
+		this.params = params;
+		this.events = {};
 	}
 	
-	addSample(name, template, worldManager) {
-		console.log('Add new sample at /' + name);
+	withEvent(eventName, fn) {
+		this.events[eventName] = fn;
+		return this;
+	}
+	
+	build() {
+		const params = this.params;
 		
-		this.app.get('/' + name, function (req, res) {
-			res.render(template);
+		this.app.get('/' + params.name, function (req, res) {
+			res.render(params.template);
 		});
-		
-		const params = {
-			io: this.io.of('/' + name),
-			clients: 0,
-			worldManager: worldManager,
-			name: name
-		};
-		this.params.push(params);
 
 		params.io.on('connect', (socket) => {
 			params.clients++;
@@ -28,15 +25,15 @@ export default class SamplePageManager {
 			
 			socket.emit('init', params.worldManager.getInfo());
 			
-			socket.on('click', event => {
-				params.worldManager.handleClientMouseClick(event);
-			});
+			for(let eventName in this.events) {
+				socket.on(eventName, this.events[eventName]);
+			}
 			
-			socket.on('disconnect', (reason) => {
+			socket.on('disconnect', reason => {
 				params.clients--;
 				if(params.clients <= 0) {
 					params.worldManager.togglePause(true);
-					console.log(name + ' in pause mode');
+					console.log(params.name + ' in pause mode');
 				}
 			});
 		});
@@ -46,7 +43,28 @@ export default class SamplePageManager {
 			params.io.volatile.emit('update', params.worldManager.getState());
 		}, UPDATE_INTERVAL);
 		
-		return params;
+		console.log('Add new sample at /' + params.name);
+	}
+}
+
+export default class SamplePageManager {
+	constructor(app, io) {
+		this.app = app;
+		this.io = io;
+		this.params = [];
+	}
+	
+	addSample(name, template, worldManager) {
+		const params = {
+			io: this.io.of('/' + name),
+			clients: 0,
+			worldManager: worldManager,
+			name: name,
+			template: template
+		};
+		this.params.push(params);
+		
+		return new SamplePageBuilder(this.app, params);
 	}
 	
 	list() {

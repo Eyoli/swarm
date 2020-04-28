@@ -36,8 +36,8 @@ export default class WorldGrid {
 	
 	getClosestNode({x, y}) {
 		return {
-			nx: Math.max(0, Math.floor(x * this.nx / this.width)),
-			ny: Math.max(0, Math.floor(y * this.ny / this.length))
+			nx: Math.max(0, Math.min(this.nx-1, Math.floor(x * this.nx / this.width))),
+			ny: Math.max(0, Math.min(this.ny-1, Math.floor(y * this.ny / this.length)))
 		};
 	}
 	

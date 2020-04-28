@@ -25,11 +25,21 @@ const samplePageManager = new SamplePageManager(app, io);
 
 // Hive world settings
 const hiveWorld = new HiveWorld(WORLD_WIDTH, WORLD_LENGTH);
-samplePageManager.addSample('hive', 'hive.ejs', hiveWorld);
+samplePageManager
+	.addSample('hive', 'hive.ejs', hiveWorld)
+	.build();
 
 // RPG world settings
 const rpgWorld = new RPGWorld(100, 100);
-samplePageManager.addSample('grid', 'grid.ejs', rpgWorld);
+samplePageManager
+	.addSample('grid', 'grid.ejs', rpgWorld)
+	.withEvent('rigthClick', event => {
+		rpgWorld.handleClientMouseRightClick(event);
+	})
+	.withEvent('selection', event => {
+		rpgWorld.handleSelection(event);
+	})
+	.build();
 
 app.get('/', function (req, res) {
 	res.render('index.ejs', {list: samplePageManager.list()});

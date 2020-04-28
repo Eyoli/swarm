@@ -1,3 +1,13 @@
+function getCanvasMousePosition(e) {
+	const target = e.target;
+	const canvasPosition = target.getBoundingClientRect();
+	
+	return {
+		x: e.pageX - canvasPosition.left,
+		y: e.pageY - canvasPosition.top
+	};
+}
+
 window.onload = function() {
 	const canvas = document.getElementById("myCanvas");
 	const ctx = canvas.getContext("2d");
@@ -13,6 +23,14 @@ window.onload = function() {
 	};
 	
 	const socket = io.connect('http://localhost:3000/grid');
+	
+	const selectionHandler = new SelectionHandler(canvas, selection => {
+		selection.x /= state.sx;
+		selection.y /= state.sy;
+		selection.width /= state.sx;
+		selection.height /= state.sy;
+		socket.emit('selection', selection);
+	});
 	
 	const ui = new GameUI();
 	ui.layout('props').at(context.length - 200)
@@ -34,7 +52,6 @@ window.onload = function() {
 	socket.on('update', function(data) {
 		state.agentsMobileMean = data.agentsMobileMean;			
 		state.agents = data.agents || [];
-		state.grid = data.grid;
     });
     
 	function draw(timestamp) {
@@ -45,57 +62,50 @@ window.onload = function() {
 		ui.layout('props')
 			.property("agents").withValue(state.agentsMobileMean.toFixed(0));
 		
-		if(state.grid) {
-			//drawGrid(state.grid.grid, state.grid.dx);
-			//drawPath(state.path, nodeSpan);
-		}
-		
 		state.agents.forEach(a => {
 			if(a.info.type === 'dupe') {
-				ctx.fillStyle = "#0000ff";
 				ctx.globalAlpha = 1;
+				if(a.info.selected) {
+					ctx.fillStyle = "#ff0000";
+					Drawer.drawCircle(ctx, {center: a.shape.center, radius: a.shape.radius + 1});
+				}
+				ctx.fillStyle = "#0000ff";
 				Drawer.drawCircle(ctx, a.shape);
 			} else {
 				ctx.globalAlpha = 1;
 				ctx.lineWidth = 1 / state.sx;
-				Drawer.drawPolygone(ctx, a.shape);
+				Drawer.drawCurvedPolygone(ctx, a.shape);
 			}
 		});
+		
+		ctx.globalAlpha = 0.2;
+		ctx.fillStyle = "#ff0000";
+		if(selectionHandler.rect.x) {
+			ctx.fillRect(
+				selectionHandler.rect.x / state.sx, 
+				selectionHandler.rect.y / state.sy, 
+				selectionHandler.rect.width / state.sx, 
+				selectionHandler.rect.height / state.sy
+			);
+		}
 		
 		ui.draw(ctx);
 		
 		window.requestAnimationFrame(draw);
 	}
 	
-	function drawGrid(grid, span) {
-		ctx.globalAlpha = 0.2;
-		grid.forEach((row, i) => row.forEach((node, j) => drawNode(i, j, node ? "#ff0000" : "#000000", span)));
-	}
-	
-	function drawPath(path, span) {
-		path.forEach(node => drawNode(node.nx, node.ny, "#00ff00", span));
-	}
-	
-	function drawNode(i, j, color, span) {
-		ctx.beginPath();
-		ctx.fillStyle = color;
-		ctx.beginPath();
-		ctx.arc((span / 2) + i * span, (span / 2) + j * span, span / 2, 0, 2 * Math.PI);
-		ctx.fill();
-	}
-	
-	function onClick(e) {
-		const target = e.target;
-		const canvasPosition = target.getBoundingClientRect();
-		const inputX = e.pageX - canvasPosition.left;
-		const inputY = e.pageY - canvasPosition.top;
-		socket.emit('click', {
-			x: inputX / state.sx,
-			y: inputY / state.sy
+	function onRightClick(e) {
+		const pos = getCanvasMousePosition(e);
+		
+		socket.emit('rigthClick', {
+			x: pos.x / state.sx,
+			y: pos.y / state.sy
 		});
+		
+		e.preventDefault();
 	}
-	
-	canvas.addEventListener("click", onClick, false);
-    
+
+	canvas.addEventListener("contextmenu", onRightClick, false);
+
     window.requestAnimationFrame(draw);
 };
