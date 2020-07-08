@@ -2,17 +2,19 @@ import express from 'express';
 import http from 'http';
 import socketIo from 'socket.io';
 
-import HiveWorld from './js/hive-world';
-import RPGWorld from './js/rpg-world';
-import SamplePageManager from './js/sample-page-manager';
+import SamplePageManager from './sample-page-manager';
+import HiveWorld from './hive-world';
+import RPGWorld from "./rpg-world";
 
 const WORLD_WIDTH = 1000;
 const WORLD_LENGTH = 1000;
 
 const app = express();
-const server = http.Server(app);
+const server = new http.Server(app);
 
-app.use('/static', express.static(__dirname + '/public'));
+app.use('/static', express.static(__dirname + '/../public'));
+
+app.set('views', __dirname + '/../views');
 
 server.listen(3000, function () {
 	console.log('Example app listening on port 3000!')
@@ -33,10 +35,10 @@ samplePageManager
 const rpgWorld = new RPGWorld(100, 100);
 samplePageManager
 	.addSample('grid', 'grid.ejs', rpgWorld)
-	.withEvent('rigthClick', event => {
+	.withEvent('rigthClick', (event: any) => {
 		rpgWorld.handleClientMouseRightClick(event);
 	})
-	.withEvent('selection', event => {
+	.withEvent('selection', (event: any) => {
 		rpgWorld.handleSelection(event);
 	})
 	.build();
