@@ -1,14 +1,17 @@
 import Rectangle from '../shape/rectangle';
 import AgentDecorator from './agent-decorator';
+import AgentInterface from './agent-interface';
 
 export default class SelectableAgent extends AgentDecorator {
-	constructor(agent, type) {
+	selected: boolean;
+
+	constructor(agent: AgentInterface) {
 		super(agent);
 		
 		this.selected = false;
 	}
 	
-	react(world, info) {
+	react(world: any, info: any) {
 		if(info.selection) {
 			if(info.selection.width) {
 				const rect = new Rectangle(info.selection, info.selection.width, info.selection.height);

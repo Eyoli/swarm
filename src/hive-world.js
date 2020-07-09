@@ -15,7 +15,7 @@ function mapAgentToClient(agent) {
 		info: agent.interact(),
 		physics: agent.getPhysics(),
 		shape: agent.getShape(),
-		id: agent.id
+		id: agent.getId()
 	};
 }
 
