@@ -43,22 +43,24 @@ export default class AgentHolder {
 		return this;
 	}
 	
-	add(agent: AgentInterface, groupName: string) {
+	add(agent: AgentInterface, groupName?: string) {
 		const id = this.identifierHolder.get();
 		if(id) {
 			agent.setId(id);
 			this.agents.push(agent);
 			
-			const group = this.groups.get(groupName);
-			if(group) {
-				group.push(agent);
+			if(groupName) {
+				const group = this.groups.get(groupName);
+				if(group) {
+					group.push(agent);
+				}
 			}
 			
 			return agent;
 		}
 	}
 	
-	get(groupName: string) {
+	get(groupName?: string) {
 		if(groupName) {
 			return this.groups.get(groupName);
 		}
