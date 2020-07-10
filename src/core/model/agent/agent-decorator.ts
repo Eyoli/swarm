@@ -6,12 +6,6 @@ export default abstract class AgentDecorator implements AgentInterface {
 	constructor(agent: AgentInterface) {		
 		this.agent = agent;
 	}
-	getId(): string | undefined {
-		return this.agent.getId();
-	}
-	setId(id: string): void {
-		this.agent.setId(id);
-	}
 	
 	act(world: any) {
 		this.agent.act(world);

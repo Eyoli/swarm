@@ -4,8 +4,6 @@ export default interface AgentInterface {
     interact(): any;
     getShape(): any;
     getPhysics(): any;
-    getId(): string | undefined;
-    setId(id: string): void;
     destroy(): void;
     isDestroyed(): boolean;
 }

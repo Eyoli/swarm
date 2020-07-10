@@ -5,7 +5,6 @@ export default abstract class Agent implements AgentInterface {
 	shape: any;
 	behavior: any;
 	destroyed: boolean;
-	id: string | undefined;
 
 	constructor(shape: any, physics: any, behavior: any) {		
 		this.physics = physics;
@@ -18,14 +17,6 @@ export default abstract class Agent implements AgentInterface {
 		if(this.behavior) {
 			this.behavior.apply(this, world);
 		}
-	}
-
-	getId() {
-		return this.id;
-	}
-
-	setId(id: string) {
-		this.id = id;
 	}
 	
 	abstract react(world: any, info: any): void;
