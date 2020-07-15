@@ -1,15 +1,17 @@
 import Interface from '../../core/interface';
 import EngineInterface from '../../core/model/engine/engine-interface';
+import World from '../../core/model/world';
 
-export default class RoundWorldEngine {
-	constructor(width, height) {
-		Interface.checkImplements(this, EngineInterface);
-		
+export default class RoundWorldEngine implements EngineInterface {
+	width: number;
+	height: number;
+
+	constructor(width: number, height: number) {		
 		this.width = width;
 		this.height = height;
 	}
 	
-	run(world) {
+	run(world: World) {
 		world.agents().forEach(agent => {
 			var center = agent.getShape().center;
 			if(center.x < 0) {

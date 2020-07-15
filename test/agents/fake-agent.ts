@@ -1,6 +1,6 @@
 import AgentInterface from "../../src/core/model/agent/agent-interface";
 
-export default class DummyAgent implements AgentInterface {
+export default class FakeAgent implements AgentInterface {
     destroyed: boolean;
 
     constructor() {

@@ -48,7 +48,7 @@ class Dupe extends Agent {
 	
 	react(world, info) {
 		if(info.target) {
-			const pathToTarget = world.getService('grid').getShortestPath(world, this.getShape().center, info.target.getShape().center);
+			const pathToTarget = world.getService('grid').getShortestPath(this.getShape().center, info.target.getShape().center);
 			this.target = info.target;
 			
 			let newTrajectory = null;
@@ -130,11 +130,12 @@ export default class RPGWorld {
 		this.length = length;
 		this.width = width;
 		this.pause = true;
-		
-		const gridService = new GridService(new WorldGrid(width, length, 25, 25));
 
-		this.world = new World(new AgentHolder(100).withGroup('selectable'))
-					.withService('grid', gridService);
+		this.world = new World(new AgentHolder(100).withGroup('selectable'));
+
+		const gridService = new GridService(
+			new WorldGrid(this.world, width, length, 25, 25));
+		this.world.withService('grid', gridService);
 		
 		const p = generatePolygones(this, Random.uniformInt(3, 6), 4, 6, 10, 8);
 		for(let i = 0; i < p.length; i++) {

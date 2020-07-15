@@ -1,16 +1,17 @@
 import EngineInterface from './engine-interface';
+import World from '../world';
 
-export default class CollisionEngine {
-	constructor(collisionFinder) {
-		EngineInterface.checkImplements(this);
-		
+export default class CollisionEngine implements EngineInterface {
+	collisionFinder: any;
+
+	constructor(collisionFinder: any) {
 		this.collisionFinder = collisionFinder;
 	}
 	
-	run(world) {
+	run(world: World) {
 		this.collisionFinder.search(world.agents().map(a => a.getShape()))
 			// Handle collisions
-			.forEach(collision => {
+			.forEach((collision: { i1: number; i2: number; }) => {
 				var agent1 = world.agents()[collision.i1];
 				var agent2 = world.agents()[collision.i2];
 				

@@ -1,15 +1,27 @@
-import {PathProvider} from './path-finder';
+import { PositionGraph } from "./path-finder";
+import Position2D from "../../model/physics/position2d";
+import Node2D from "./node2d";
+import World from "../../model/world";
 
-function distanceN2(node1, node2) {
+function distanceN2(node1: Node2D, node2: Node2D) {
 	let dx = (node2.nx - node1.nx);
 	let dy = (node2.ny - node1.ny);
 	return Math.sqrt(dx * dx + dy * dy);
 }
 
-export default class WorldGrid {
-	constructor(width, length, nx, ny) {
-		PathProvider.checkImplements(this);
+export default class WorldGrid implements PositionGraph<Position2D, Node2D> {
+	world: World;
+	width: number;
+	length: number;
+	nx: number;
+	ny: number;
+	dx: number;
+	dy: number;
+	grid: boolean[][];
+
+	constructor(world: World, width: number, length: number, nx: number, ny: number) {
 		
+		this.world = world;
 		this.width = width;
 		this.length = length;
 		this.nx = nx;
@@ -34,33 +46,33 @@ export default class WorldGrid {
 		}
 	}
 	
-	getClosestNode({x, y}) {
-		return {
-			nx: Math.max(0, Math.min(this.nx-1, Math.floor(x * this.nx / this.width))),
-			ny: Math.max(0, Math.min(this.ny-1, Math.floor(y * this.ny / this.length)))
-		};
+	getClosestNode(p: Position2D) {
+		return new Node2D(
+			Math.max(0, Math.min(this.nx-1, Math.floor(p.x * this.nx / this.width))),
+			Math.max(0, Math.min(this.ny-1, Math.floor(p.y * this.ny / this.length)))
+		);
 	}
 	
-	getPosition(node) {
-		return {
-			x: (this.dx / 2) + node.nx * this.dx,
-			y: (this.dy / 2) + node.ny * this.dy
-		};
+	getPosition(node: Node2D) {
+		return new Position2D(
+			(this.dx / 2) + node.nx * this.dx,
+			(this.dy / 2) + node.ny * this.dy
+		);
 	}
 	
-	getNodeKey(node) {
+	getNodeKey(node: Node2D) {
 		return node.nx + '/' + node.ny;
 	}
 	
-	update(world) {
+	update() {
 		this.reset();
 		
-		world.agents().forEach(agent => {
+		this.world.agents().forEach(agent => {
 			this.updatePart(agent.getShape());
 		}, this);
 	}
 	
-	updatePart(shape) {
+	updatePart(shape: any) {
 		const rect = shape.boundary();
 		const start = this.getClosestNode({
 			x: shape.center.x + rect.topLeft().x,
@@ -81,7 +93,7 @@ export default class WorldGrid {
 		}
 	}
 	
-	getNeighbours(node) {
+	getNeighbours(node: Node2D) {
 		const neighbours = [];
 		const nxPlus1 = node.nx + 1;
 		const nxMinus1 = node.nx - 1;
@@ -90,48 +102,48 @@ export default class WorldGrid {
 		
 		if(nyPlus1 < this.ny && !this.grid[node.nx][nyPlus1]
 			&& nxPlus1 < this.nx && !this.grid[nxPlus1][nyPlus1]) {
-			neighbours.push({nx: nxPlus1, ny: nyPlus1});
+			neighbours.push(new Node2D(nxPlus1, nyPlus1));
 		}
 			
 		if(nyPlus1 < this.ny && !this.grid[node.nx][nyPlus1]
 			&& nxMinus1 >= 0 && !this.grid[nxMinus1][nyPlus1]) {
-			neighbours.push({nx: nxMinus1, ny: nyPlus1});
+			neighbours.push(new Node2D(nxMinus1, nyPlus1));
 		}
 		
 		if(nyMinus1 >= 0 && !this.grid[node.nx][nyMinus1]
 			&& nxPlus1 < this.nx && !this.grid[nxPlus1][nyMinus1]) {
-			neighbours.push({nx: nxPlus1, ny: nyMinus1});
+			neighbours.push(new Node2D(nxPlus1, nyMinus1));
 		}
 		
 		if(nyMinus1 >= 0 && !this.grid[node.nx][nyMinus1]
 			&& nxMinus1 >= 0 && !this.grid[nxMinus1][nyMinus1]) {
-			neighbours.push({nx: nxMinus1, ny: nyMinus1});
+			neighbours.push(new Node2D(nxMinus1, nyMinus1));
 		}
 		
 		if(nxPlus1 < this.nx && !this.grid[nxPlus1][node.ny]) {
-			neighbours.push({nx: nxPlus1, ny: node.ny});
+			neighbours.push(new Node2D(nxPlus1, node.ny));
 		}
 		
 		if(nxMinus1 >= 0 && !this.grid[nxMinus1][node.ny]) {
-			neighbours.push({nx: nxMinus1, ny: node.ny});
+			neighbours.push(new Node2D(nxMinus1, node.ny));
 		}
 		
 		if(nyPlus1 < this.ny && !this.grid[node.nx][nyPlus1]) {
-			neighbours.push({nx: node.nx, ny: nyPlus1});
+			neighbours.push(new Node2D(node.nx, nyPlus1));
 		}
 		
 		if(nyMinus1 >= 0 && !this.grid[node.nx][nyMinus1]) {
-			neighbours.push({nx: node.nx, ny: nyMinus1});
+			neighbours.push(new Node2D(node.nx, nyMinus1));
 		}
 
 		return neighbours;
 	}
 	
-	costBetween(node1, node2) {
+	costBetween(node1: Node2D, node2: Node2D) {
 		return distanceN2(node1, node2);
 	}
 	
-	distanceBetween(node1, node2) {
+	distanceBetween(node1: Node2D, node2: Node2D) {
 		return 0.5 * distanceN2(node1, node2);
 	}
 }

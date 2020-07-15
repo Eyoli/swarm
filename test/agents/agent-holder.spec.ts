@@ -1,12 +1,12 @@
 import AgentHolder from "../../src/core/model/agent/agent-holder";
 import * as Assert from "assert";
-import DummyAgent from "./dummy-agent";
+import FakeAgent from "./fake-agent";
 
-describe('An agent holder...', () => {
+describe('An agent holder should...', () => {
 
-    it('should attribute an identifier to an added agent', () => {
+    it('attribute an identifier to an added agent', () => {
         // arrange
-        const agent = new DummyAgent();
+        const agent = new FakeAgent();
         const agentHolder = new AgentHolder(10);
 
         // act
@@ -17,10 +17,10 @@ describe('An agent holder...', () => {
         Assert.strictEqual(agentWrapper.getId(), "0");
     });
 
-    it('should attribute a unique identifier', () => {
+    it('attribute a unique identifier', () => {
         // arrange
-        const agent1 = new DummyAgent();
-        const agent2 = new DummyAgent();
+        const agent1 = new FakeAgent();
+        const agent2 = new FakeAgent();
         const agentHolder = new AgentHolder(10);
 
         // act
@@ -32,11 +32,11 @@ describe('An agent holder...', () => {
         Assert.notStrictEqual(agentWrapper1.getId(), agentWrapper2.getId());
     });
 
-    it('should release identifier upon agent destruction', () => {
+    it('release identifier upon agent destruction', () => {
         // arrange
-        const agent1 = new DummyAgent();
-        const agent2 = new DummyAgent();
-        const agent3 = new DummyAgent();
+        const agent1 = new FakeAgent();
+        const agent2 = new FakeAgent();
+        const agent3 = new FakeAgent();
         const agentHolder = new AgentHolder(10);
 
         // act
@@ -50,10 +50,10 @@ describe('An agent holder...', () => {
         Assert.strictEqual(agentWrapper3.getId(), "0");
     });
 
-    it('should stop attributing identifiers when maximum size is reached', () => {
+    it('stop attributing identifiers when maximum size is reached', () => {
         // arrange
-        const agent1 = new DummyAgent();
-        const agent2 = new DummyAgent();
+        const agent1 = new FakeAgent();
+        const agent2 = new FakeAgent();
         const agentHolder = new AgentHolder(1);
 
         // act
