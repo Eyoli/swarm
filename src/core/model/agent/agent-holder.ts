@@ -1,4 +1,5 @@
 import AgentInterface from "./agent-interface";
+import AgentWithId from "./agent-with-id";
 
 class IdentifierHolder {
 	ids: string[];
@@ -14,7 +15,7 @@ class IdentifierHolder {
 		return this.ids.shift();
 	}
 	
-	release(id: string | undefined) {
+	release(id: string) {
 		if(id) {
 			let i = 0
 			while(i < this.ids.length && this.ids[i] < id) {
@@ -27,14 +28,14 @@ class IdentifierHolder {
 
 export default class AgentHolder {
 	maxAgents: number;
-	agents: AgentInterface[];
-	groups: Map<string, AgentInterface[]>;
+	agents: AgentWithId[];
+	groups: Map<string, AgentWithId[]>;
 	identifierHolder: IdentifierHolder;
 
 	constructor(maxAgents: number) {
 		this.maxAgents = maxAgents;
 		this.agents = [];
-		this.groups = new Map<string, AgentInterface[]>();
+		this.groups = new Map<string, AgentWithId[]>();
 		this.identifierHolder = new IdentifierHolder(maxAgents);
 	}
 	
@@ -43,26 +44,28 @@ export default class AgentHolder {
 		return this;
 	}
 	
-	add(agent: AgentInterface, groupName?: string) {
+	add(agent: AgentInterface, groupName?: string): AgentWithId | null {
 		const id = this.identifierHolder.get();
 		if(id) {
-			agent.setId(id);
-			this.agents.push(agent);
+			const agentWrapper = new AgentWithId(agent, id);
+			this.agents.push(agentWrapper);
 			
 			if(groupName) {
 				const group = this.groups.get(groupName);
 				if(group) {
-					group.push(agent);
+					group.push(agentWrapper);
 				}
 			}
 			
-			return agent;
+			return agentWrapper;
 		}
+
+		return null;
 	}
 	
 	get(groupName?: string) {
 		if(groupName) {
-			return this.groups.get(groupName);
+			return this.groups.get(groupName) || [];
 		}
 		return this.agents;
 	}
@@ -73,9 +76,14 @@ export default class AgentHolder {
 	
 	clear() {
 		const identifierHolder = this.identifierHolder;
-		const idsToRelease = this.agents
+		this.agents
 			.filter(a => a.isDestroyed())
-			.forEach(a => identifierHolder.release(a.getId()));
+			.map(a => a.getId())
+			.forEach(id => {
+				if(id) {
+					identifierHolder.release(id);
+				}
+			});
 		this.agents = this.agents.filter(a => !a.isDestroyed());
 	}
 }

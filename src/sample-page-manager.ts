@@ -1,9 +1,10 @@
 import socketIo from 'socket.io';
 import express from 'express';
 
-import {WorldManager} from './world-manager';
+import WorldManager from './world-manager';
 
 const UPDATE_INTERVAL = 1000 / 30;
+type EventListener = (...args: any[]) => void;
 
 class PageParameters {
 	io: socketIo.Namespace;
@@ -25,15 +26,15 @@ class PageParameters {
 class SamplePageBuilder {
 	app: express.Express;
 	params: PageParameters
-	events: Map<string, any>
+	events: Map<string, EventListener>
 
 	constructor(app: express.Express, params: PageParameters) {
 		this.app = app;
 		this.params = params;
-		this.events = new Map<string, any>();
+		this.events = new Map<string, EventListener>();
 	}
 	
-	withEvent(eventName: string, fn: Function) {
+	withEvent(eventName: string, fn: EventListener) {
 		this.events.set(eventName, fn);
 		return this;
 	}
@@ -52,10 +53,13 @@ class SamplePageBuilder {
 			socket.emit('init', params.worldManager.getInfo());
 			
 			for(let eventName in this.events) {
-				socket.on(eventName, this.events.get(eventName));
+				const eventListener = this.events.get(eventName);
+				if(eventListener) {
+					socket.on(eventName, eventListener);
+				}
 			}
 			
-			socket.on('disconnect', reason => {
+			socket.on('disconnect', (reason: string) => {
 				params.clients--;
 				if(params.clients <= 0) {
 					params.worldManager.togglePause(true);

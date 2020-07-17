@@ -9,8 +9,10 @@ import RoundWorldEngine from './utils/engine/round-world-engine';
 import MobileMeanExtractor from './core/statistics/mobile-mean-extractor';
 
 import {generateFlower, generateHive} from './hive/hive-agent-factory';
+import WorldManager from './world-manager';
+import AgentWithId from './core/model/agent/agent-with-id';
 
-function mapAgentToClient(agent) {
+function mapAgentToClient(agent: AgentWithId): any {
 	return {
 		info: agent.interact(),
 		physics: agent.getPhysics(),
@@ -19,8 +21,16 @@ function mapAgentToClient(agent) {
 	};
 }
 
-export default class HiveWorld {
-	constructor(width, length) {
+export default class HiveWorld implements WorldManager {
+	length: number;
+	width: number;
+	pause: boolean;
+	world: World;
+	collisionsMobileMean: MobileMeanExtractor;
+	agentsMobileMean: MobileMeanExtractor;
+	collisionEngine: CollisionEngine;
+	
+	constructor(width: number, length: number) {
 		this.length = length;
 		this.width = width;
 		this.pause = true;
@@ -37,8 +47,8 @@ export default class HiveWorld {
 		generateFlower(this.world, {x: 300, y: 300});
 		generateHive(this.world, {x: 10, y: 10}, 5);
 					
-		this.collisionsMobileMean = new MobileMeanExtractor(this.collisionEngine, e => e.collisionFinder.getLastComputations(), 20);
-		this.agentsMobileMean = new MobileMeanExtractor(this.world, w => w.agents().length, 20);
+		this.collisionsMobileMean = new MobileMeanExtractor(this.collisionEngine, (e: CollisionEngine) => e.collisionFinder.getLastComputations(), 20);
+		this.agentsMobileMean = new MobileMeanExtractor(this.world, (w: World) => w.agents().length, 20);
 	}
 	
 	advance() {
@@ -47,7 +57,7 @@ export default class HiveWorld {
 		}
 	}
 	
-	togglePause(pause) {
+	togglePause(pause: boolean) {
 		this.pause = pause;
 	}
 	
@@ -63,7 +73,6 @@ export default class HiveWorld {
 			agentsMobileMean: this.agentsMobileMean.update(),
 			length: this.length,
 			width: this.width
-			
 		};
 	}
 }

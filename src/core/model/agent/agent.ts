@@ -1,13 +1,13 @@
 import AgentInterface from './agent-interface';
+import Shape from '../shape/shape';
 
 export default abstract class Agent implements AgentInterface {
 	physics: any;
-	shape: any;
+	shape: Shape;
 	behavior: any;
 	destroyed: boolean;
-	id: string | undefined;
 
-	constructor(shape: any, physics: any, behavior: any) {		
+	constructor(shape: Shape, physics: any, behavior?: any) {		
 		this.physics = physics;
 		this.shape = shape;
 		this.behavior = behavior;
@@ -18,14 +18,6 @@ export default abstract class Agent implements AgentInterface {
 		if(this.behavior) {
 			this.behavior.apply(this, world);
 		}
-	}
-
-	getId() {
-		return this.id;
-	}
-
-	setId(id: string) {
-		this.id = id;
 	}
 	
 	abstract react(world: any, info: any): void;

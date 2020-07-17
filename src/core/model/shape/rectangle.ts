@@ -1,12 +1,13 @@
 import Polygone from './polygone';
+import Position2D from '../physics/position2d';
 
 export default class Rectangle extends Polygone {
-	constructor({x, y}, length, width) {
+	constructor(p: Position2D, length: number, width: number) {
 		super(
-			{x: x, y: y}, 
-			{x: x + length, y: y}, 
-			{x: x + length, y: y + width}, 
-			{x: x, y: y + width}
+			{x: p.x, y: p.y}, 
+			{x: p.x + length, y: p.y}, 
+			{x: p.x + length, y: p.y + width}, 
+			{x: p.x, y: p.y + width}
 		);
 	}
 	

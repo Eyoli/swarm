@@ -1,8 +1,12 @@
 import Shape from './shape';
 import {computeCenter, iTranslate, computeBoundingRect} from '../../math'
+import Position2D from '../physics/position2d';
 
 export default class Polygone extends Shape {
-	constructor(...summits) {
+	summits: Position2D[];
+	boundingRect?: Shape;
+
+	constructor(...summits: Position2D[]) {
 		let center = computeCenter(summits);
 		
 		super(center);
@@ -10,7 +14,7 @@ export default class Polygone extends Shape {
 		this.summits = summits.map(s => iTranslate(s, center));
 	}
 	
-	contains(point) {
+	contains(point: Position2D) {
 		let test = iTranslate(point, this.center);
 		
 		let yMax = Math.max(...this.summits.map(s => s.y));

@@ -1,6 +1,5 @@
 "use strict";
 
-import Interface from '../core/interface';
 import Agent from '../core/model/agent/agent';
 import Circle from '../core/model/shape/circle';
 import BasicPhysics from '../core/model/physics/basic-physics';
