@@ -14,7 +14,8 @@ export default class GridService {
 	
 	getShortestPath(start: Position2D, end: Position2D) {
 		this.worldGrid.update();
-		const shortestPath = this.pathFinder.getShortestPathFromPosition(this.worldGrid, start, end).path
+		const shortestPath = this.pathFinder
+			.getShortestPathFromPosition(this.worldGrid, this.worldGrid.getClosestNode, start, end).path
 			.map(node => this.worldGrid.getPosition(node));
 		
 		if(shortestPath.length > 0) {

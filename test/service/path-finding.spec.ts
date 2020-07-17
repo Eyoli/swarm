@@ -1,5 +1,6 @@
 import * as Assert from "assert";
-import {PathFinder, Graph} from "../../src/core/service/path/path-finder";
+import {Graph} from "../../src/core/service/path/graph";
+import {PathFinder} from "../../src/core/service/path/path-finder";
 
 class FakeNode {
     key: string;
@@ -44,6 +45,36 @@ describe('A path finder should guess correctly the shortest path from one node t
 
     const pathFinder = new PathFinder<FakeNode>();
 
+    it('no path', () => {
+        // arrange
+        const node1 = new FakeNode("1");
+        const node2 = new FakeNode("2");
+        const fakeGraph = new FakeGraph()
+            .addNode(node1)
+            .addNode(node2);
+
+        // act
+        const shortestPath = pathFinder.getShortestPath(fakeGraph, node1, node2);
+
+        // assert
+        Assert.strictEqual(shortestPath.path.length, 0);
+        Assert.strictEqual(shortestPath.cost, Infinity);
+    });
+
+    it('start is end', () => {
+        // arrange
+        const node1 = new FakeNode("1");
+        const fakeGraph = new FakeGraph()
+            .addNode(node1);
+
+        // act
+        const shortestPath = pathFinder.getShortestPath(fakeGraph, node1, node1);
+
+        // assert
+        Assert.strictEqual(shortestPath.path.length, 1);
+        Assert.strictEqual(shortestPath.cost, 0);
+    });
+
     it('straight path', () => {
         // arrange
         const node1 = new FakeNode("1");
@@ -76,16 +107,16 @@ describe('A path finder should guess correctly the shortest path from one node t
             .addNode(node1)
             .addNode(node2)
             .addNode(node3)
-            .addVertex(node1, node2, 1)
-            .addVertex(node2, node3, 1)
-            .addVertex(node1, node3, 1)
+            .addVertex(node1, node2, 4)
+            .addVertex(node2, node3, 5)
+            .addVertex(node1, node3, 8)
 
         // act
         const shortestPath = pathFinder.getShortestPath(fakeGraph, node1, node3);
 
         // assert
         Assert.strictEqual(shortestPath.path.length, 2);
-        Assert.strictEqual(shortestPath.cost, 1);
+        Assert.strictEqual(shortestPath.cost, 8);
         Assert.strictEqual(shortestPath.path[0], node1);
         Assert.strictEqual(shortestPath.path[1], node3);
     });

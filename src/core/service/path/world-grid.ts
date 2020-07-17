@@ -1,4 +1,4 @@
-import { PositionGraph } from "./path-finder";
+import { Graph } from "./graph";
 import Position2D from "../../model/physics/position2d";
 import Node2D from "./node2d";
 import World from "../../model/world";
@@ -9,7 +9,7 @@ function distanceN2(node1: Node2D, node2: Node2D) {
 	return Math.sqrt(dx * dx + dy * dy);
 }
 
-export default class WorldGrid implements PositionGraph<Position2D, Node2D> {
+export default class WorldGrid implements Graph<Node2D> {
 	world: World;
 	width: number;
 	length: number;

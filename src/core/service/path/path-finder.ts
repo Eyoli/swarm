@@ -1,23 +1,4 @@
-export interface Graph<N> {
-	getNeighbours(node: N): Iterable<N>;
-	getNodeKey(node: N) : string;
-	costBetween(node: N, neighbour: N): number;
-	distanceBetween(node1: N, node2: N): number;
-}
-
-export interface PositionGraph<P, N> extends Graph<N> {
-	getClosestNode(position: P): N;
-}
-
-export class ShortestPath<N> {
-	path: N[];
-	cost: number;
-
-	constructor(path: N[], cost: number) {
-		this.path = path;
-		this.cost = cost;
-	}
-}
+import {Path, Graph} from "./graph";
 
 class NodeState<N> {
 	tested: boolean;
@@ -30,6 +11,8 @@ class NodeState<N> {
 		this.previous = null;
 	}
 }
+
+type PositionMapping<P,N> = (p: P) => N; 
 
 export class PathFinder<N> {
 	constructor() {
@@ -44,14 +27,14 @@ export class PathFinder<N> {
 		return state;
 	}
 
-	getShortestPathFromPosition<P>(positionGraph: PositionGraph<P, N>, start: P, end: P) {
-		const startNode = positionGraph.getClosestNode(start);
-		const endNode = positionGraph.getClosestNode(end);
-		return this.getShortestPath(positionGraph, startNode, endNode);
+	getShortestPathFromPosition<P>(graph: Graph<N>, getClosestNode: PositionMapping<P,N>, start: P, end: P) {
+		const startNode = getClosestNode(start);
+		const endNode = getClosestNode(end);
+		return this.getShortestPath(graph, startNode, endNode);
 	}
 
-	getShortestPath(provider: Graph<N>, startNode: N, endNode: N): ShortestPath<N> {
-		const endNodeKey = provider.getNodeKey(endNode);	
+	getShortestPath(graph: Graph<N>, startNode: N, endNode: N): Path<N> {
+		const endNodeKey = graph.getNodeKey(endNode);	
 		const nodesState = new Map<N,NodeState<N>>();
 		
 		let currentNode = startNode;
@@ -59,19 +42,19 @@ export class PathFinder<N> {
 		const candidates: N[] = [];
 		
 		while(currentNode 
-			&& provider.getNodeKey(currentNode) !== endNodeKey) {
+			&& graph.getNodeKey(currentNode) !== endNodeKey) {
 			//console.log('node: ', currentNode);
 			
 			const currentNodeState = this.getNodeState(currentNode, nodesState);
 			currentNodeState.tested = true;
 			const cost = currentNodeState.cost;
 			
-			const neighbours = provider.getNeighbours(currentNode);
+			const neighbours = graph.getNeighbours(currentNode);
 			//console.log('neighbours: ', neighbours);
 			
 			for(let neighbour of neighbours) {
 				const state = this.getNodeState(neighbour, nodesState);
-				const costToNode = provider.costBetween(currentNode, neighbour);
+				const costToNode = graph.costBetween(currentNode, neighbour);
 				if(!state.tested) {
 					if(state.cost === Infinity) {
 						candidates.push(neighbour);
@@ -90,7 +73,7 @@ export class PathFinder<N> {
 
 			candidates.forEach((candidate, i) => {
 				const state = this.getNodeState(candidate, nodesState);
-				const estimatedCost = state.cost + provider.distanceBetween(candidate, endNode);
+				const estimatedCost = state.cost + graph.distanceBetween(candidate, endNode);
 				if(nextEstimatedCost > estimatedCost) {
 					nextEstimatedCost = estimatedCost;
 					nextIndex = i;
@@ -112,9 +95,9 @@ export class PathFinder<N> {
 				state = this.getNodeState(state.previous, nodesState);
 			}
 
-			return new ShortestPath(shortestPath, totalCost);
+			return new Path(shortestPath, totalCost);
 		}
 		
-		return new ShortestPath([], Infinity);
+		return new Path([], Infinity);
 	}
 }

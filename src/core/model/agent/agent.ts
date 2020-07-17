@@ -1,12 +1,13 @@
 import AgentInterface from './agent-interface';
+import Shape from '../shape/shape';
 
 export default abstract class Agent implements AgentInterface {
 	physics: any;
-	shape: any;
+	shape: Shape;
 	behavior: any;
 	destroyed: boolean;
 
-	constructor(shape: any, physics: any, behavior: any) {		
+	constructor(shape: Shape, physics: any, behavior?: any) {		
 		this.physics = physics;
 		this.shape = shape;
 		this.behavior = behavior;

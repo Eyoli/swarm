@@ -10,20 +10,24 @@ import SelectableAgent from './core/model/agent/selectable-agent';
 import Polygone from './core/model/shape/polygone';
 import BasicPhysics from './core/model/physics/basic-physics';
 
-import Behavior from './core/model/behavior/behavior';
 import Circle from './core/model/shape/circle';
 import TypedAgent from './utils/agent/typed-agent';
 import MoveBehavior from './utils/behavior/move-behavior';
 import BSplineTrajectory from './core/model/trajectory/b-spline-trajectory';
 
 import Random from './core/random';
+import WorldManager from './world-manager';
+import Position2D from './core/model/physics/position2d';
+import AgentInterface from './core/model/agent/agent-interface';
+import AgentWithId from './core/model/agent/agent-with-id';
+import { SelectionHandler, MouseRightClickHandler } from './events';
 
 class Wall extends Agent {
-	constructor(polygone) {
+	constructor(polygone: Polygone) {
 		super(polygone, new BasicPhysics());
 	}
 	
-	react(world, info) {
+	react(world: World, info: any) {
 	}
 	
 	interact() {
@@ -33,7 +37,10 @@ class Wall extends Agent {
 }
 
 class Dupe extends Agent {
-	constructor(position) {
+	moveBehavior: MoveBehavior;
+	target: any;
+
+	constructor(position: Position2D) {
 		const config = {amp: 1, angle: 0, max: 0.1};
 		const moveBehavior = new MoveBehavior();
 		
@@ -46,7 +53,7 @@ class Dupe extends Agent {
 		this.moveBehavior = moveBehavior;
 	}
 	
-	react(world, info) {
+	react(world: World, info: any) {
 		if(info.target) {
 			const pathToTarget = world.getService('grid').getShortestPath(this.getShape().center, info.target.getShape().center);
 			this.target = info.target;
@@ -71,7 +78,7 @@ class Dupe extends Agent {
 }
 
 class Target extends Agent {
-	constructor(position) {
+	constructor(position: Position2D) {
 		
 		super(
 			new Circle(position, 1), 
@@ -79,7 +86,7 @@ class Target extends Agent {
 		);
 	}
 	
-	react(world, info) {
+	react(world: World, info: any) {
 	}
 	
 	interact() {
@@ -89,12 +96,12 @@ class Target extends Agent {
 }
 
 class Playable extends AgentDecorator {
-	constructor(agent, type) {
+	constructor(agent: AgentInterface, type: string) {
 		super(new TypedAgent(new SelectableAgent(agent), type));
 	}
 }
 
-function mapAgentToClient(agent) {
+function mapAgentToClient(agent: AgentWithId) {
 	return {
 		info: agent.interact(),
 		physics: agent.getPhysics(),
@@ -102,7 +109,7 @@ function mapAgentToClient(agent) {
 	};
 }
 
-function generatePolygone(center, n, mu, sigma) {
+function generatePolygone(center: Position2D, n: number, mu: number, sigma: number) {
 	const summits = [];
 	for(let i = 0; i < n; i++) {
 		const angle = 2 * Math.PI * i / n;
@@ -116,7 +123,7 @@ function generatePolygone(center, n, mu, sigma) {
 	return new Polygone(...summits);
 }
 
-function generatePolygones(w, n, sMin, sMax, mu, sigma) {
+function generatePolygones(w: RPGWorld, n: number, sMin: number, sMax: number, mu: number, sigma: number) {
 	const polygones = [];
 	for(let i = 0; i < n; i++) {
 		polygones.push(generatePolygone(
@@ -125,8 +132,13 @@ function generatePolygones(w, n, sMin, sMax, mu, sigma) {
 	return polygones;
 }
 
-export default class RPGWorld {
-	constructor(width, length) {
+export default class RPGWorld implements WorldManager, SelectionHandler, MouseRightClickHandler {
+	length: number;
+	width: number;
+	pause: boolean;
+	world: World;
+	agentsMobileMean: MobileMeanExtractor;
+	constructor(width: number, length: number) {
 		this.length = length;
 		this.width = width;
 		this.pause = true;
@@ -145,15 +157,15 @@ export default class RPGWorld {
 		this.world.addAgent(new Playable(new Dupe({x:5,y:5}), 'dupe'), 'selectable');
 		this.world.addAgent(new Playable(new Dupe({x:10,y:10}), 'dupe'), 'selectable');
 		
-		this.agentsMobileMean = new MobileMeanExtractor(this.world, w => w.agents().length, 20);
+		this.agentsMobileMean = new MobileMeanExtractor(this.world, (w: World) => w.agents().length, 20);
 	}
 	
-	handleClientMouseRightClick(event) {
+	handleClientMouseRightClick(event: any) {
 		const target = new Target(event);
 		this.world.broadcast({target: target});
 	}
 	
-	handleSelection(selection) {
+	handleSelection(selection: any) {
 		this.world.broadcast({selection: selection}, 'selectable');
 	}
 	
@@ -163,7 +175,7 @@ export default class RPGWorld {
 		}
 	}
 	
-	togglePause(pause) {
+	togglePause(pause: boolean) {
 		this.pause = pause;
 	}
 	
@@ -179,7 +191,6 @@ export default class RPGWorld {
 			agents: this.world.agents().map(mapAgentToClient),
 			agentsMobileMean: this.agentsMobileMean.update(),
 			grid: this.world.getService('grid').getGrid(this.world)
-			
 		};
 	}
 }

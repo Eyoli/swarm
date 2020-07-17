@@ -1,9 +1,13 @@
 import Shape from './shape';
 import Rectangle from './rectangle';
 import {computeDistanceInfo} from '../../math';
+import Position2D from '../physics/position2d';
 
 export default class Circle extends Shape {
-	constructor(center, radius) {
+	radius: number;
+	squareRadius: number;
+
+	constructor(center: Position2D, radius: number) {
 		super(center);
 		
 		this.radius = radius;
@@ -18,7 +22,7 @@ export default class Circle extends Shape {
 		);
 	}
 	
-	contains(point) {
+	contains(point: Position2D) {
 		const distanceInfo = computeDistanceInfo(this.center, point);
 		return distanceInfo.std <= this.squareRadius;
 	}

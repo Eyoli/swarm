@@ -1,8 +1,16 @@
-export interface WorldManager {
-    handleClientMouseRightClick(event: any): void;
-    handleSelection(event: any): void;
+class StateResponse {
+    agents?: any[];
+    width?: number;
+    length?: number;
+
+    constructor() {
+
+    }
+}
+
+export default interface WorldManager {
     togglePause(state: boolean): void;
     getInfo(): any;
-    getState(): any;
+    getState(): StateResponse;
     advance(): void;
 }

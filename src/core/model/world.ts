@@ -35,11 +35,11 @@ export default class World {
 		return this.services.get(serviceName);
 	}
 
-	addAgent(agent: AgentInterface, groupName: string) {
+	addAgent(agent: AgentInterface, groupName?: string) {
 		return this.agentHolder.add(agent, groupName);
 	}
 
-	broadcast(event: any, groupName: string) {
+	broadcast(event: any, groupName?: string) {
 		this.agentHolder.get(groupName).forEach(agent => agent.react(this, event));
 	}
 
